@@ -1,0 +1,58 @@
+/*
+ * Tailwind entry for the lookbook island.
+ *
+ * Preflight is deliberately NOT imported. Preflight is a global reset, and this
+ * stylesheet is loaded by a section that owns one region of one page. Importing it
+ * would let a section restyle the header, the footer, and every other section on
+ * the page — a section reaching well outside its own boundary. The theme owns its
+ * base styles in assets/base.css; Tailwind here provides utilities and nothing more.
+ *
+ * See docs/adr/0004-tailwind-without-preflight.md.
+ */
+@layer theme, base, components, utilities;
+
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+/*
+ * Tailwind 4 is CSS-first: design tokens live here, not in a tailwind.config.js.
+ * Each token below becomes a utility — `--color-lookbook-ink` yields `text-lookbook-ink`,
+ * `bg-lookbook-ink`, and so on.
+ */
+@theme {
+  --font-display: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --color-lookbook-ink: oklch(0.21 0 0);
+  --color-lookbook-muted: oklch(0.55 0 0);
+  --color-lookbook-line: oklch(0.92 0 0);
+  --color-lookbook-surface: oklch(0.98 0 0);
+  /* Sale pricing. Contrast checked against --color-lookbook-surface: 5.1:1, clears WCAG AA. */
+  --color-lookbook-sale: oklch(0.52 0.19 25);
+
+  --spacing-gutter: 1.5rem;
+}
+
+/*
+ * Tailwind discovers utilities by scanning source files. It finds JSX through the
+ * Vite plugin's module graph, but Liquid is invisible to that graph — those files are
+ * never imported by anything JavaScript touches. Without these globs, any class used
+ * only in a .liquid file is purged from the production build, which fails in a
+ * particularly nasty way: dev looks correct, production renders unstyled.
+ */
+@source '../../theme/sections/lookbook*.liquid';
+@source '../../theme/snippets/lookbook-*.liquid';
+
+/*
+ * Respect the shopper's motion preference. Tailwind's own transition utilities are
+ * not automatically motion-safe, and a lookbook is image-heavy enough that fade-ins
+ * are genuinely uncomfortable for some people.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .lookbook-root *,
+  .lookbook-root *::before,
+  .lookbook-root *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
