@@ -10,7 +10,7 @@ Built for the Convert Digital technical assessment. No third-party apps.
 |                 |                                                        |
 | --------------- | ------------------------------------------------------ |
 | **Store**       | `convert-digital-john-kenneth-fernandez.myshopify.com` |
-| **Theme**       | `Lookbook` (unpublished, id `153449037959`)            |
+| **Theme**       | `Lookbook` (published, id `153449037959`)              |
 | **Markets**     | Australia (AUD, primary) · Japan (JPY)                 |
 | **API version** | `2026-07`, pinned                                      |
 

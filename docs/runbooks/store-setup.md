@@ -155,6 +155,11 @@ selected, so a fresh push arrives configured.)
 **Product page** — add the **Lookbook (product page)** section. It has no picker; it
 resolves lookbooks from the product being viewed.
 
+Finally, publish the theme: **Online Store → Themes → Lookbook → Publish**. Pushing with
+`--unpublished` deliberately leaves it as a draft so nothing changes under you mid-setup;
+publishing at the end means the store URL alone reaches the work, rather than needing a
+`?preview_theme_id=` parameter alongside the password.
+
 ## 9. Verify
 
 ```bash
