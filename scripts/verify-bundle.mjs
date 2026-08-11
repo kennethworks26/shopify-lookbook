@@ -37,16 +37,20 @@ if (missing.length > 0) {
   fail(`Build did not produce: ${missing.join(', ')}`);
 }
 
-const dirty = run('git', ['status', '--porcelain', '--', ...ARTIFACTS]);
+/*
+ * Ask about each artifact by name rather than parsing `git status --porcelain`
+ * output. Porcelain is fixed-width — two status columns then a space — so the
+ * filename starts at index 3, but only if nothing has trimmed the leading space
+ * off an unstaged entry first. Naming the files we already know about sidesteps
+ * that entirely and cannot misreport a path.
+ */
+const dirty = ARTIFACTS.filter(
+  (file) => run('git', ['status', '--porcelain', '--', file]) !== ''
+);
 
-if (dirty) {
-  const files = dirty
-    .split('\n')
-    .map((line) => line.slice(3))
-    .join('\n  ');
-
+if (dirty.length > 0) {
   fail(
-    `Committed build output is stale:\n\n  ${files}\n\n` +
+    `Committed build output is stale:\n\n  ${dirty.join('\n  ')}\n\n` +
       'Source changed without a rebuild, so the storefront would serve older code\n' +
       'than this branch describes. Run `npm run build` and commit the result\n' +
       'alongside the source change that caused it.'
