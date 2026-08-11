@@ -1,0 +1,56 @@
+{%- comment -%}
+  Minimal header. This theme exists to demonstrate the lookbook feature, so the
+  chrome around it is kept deliberately small and readable rather than reproducing
+  a full commercial theme's navigation.
+
+  The market selector is the exception and earns its place: switching between the
+  AUD and JPY markets is how the per-market pricing requirement is demonstrated.
+{%- endcomment -%}
+
+<header class="header">
+  <div class="header__inner">
+    <a class="header__logo" href="{{ routes.root_url }}">{{ shop.name }}</a>
+
+    <nav class="header__nav" aria-label="Primary">
+      {%- for link in linklists['main-menu'].links -%}
+        <a
+          href="{{ link.url }}"
+          {% if link.active %}
+            aria-current="page"
+          {% endif %}
+        >
+          {{- link.title -}}
+        </a>
+      {%- endfor -%}
+    </nav>
+
+    {%- if localization.available_countries.size > 1 -%}
+      <form method="post" action="{{ routes.root_url }}localization" class="header__market">
+        <input type="hidden" name="form_type" value="localization">
+        <input type="hidden" name="_method" value="put">
+        <input type="hidden" name="return_to" value="{{ request.path }}">
+
+        <label class="visually-hidden" for="market-selector">Country/region</label>
+        <select id="market-selector" name="country_code" onchange="this.form.submit()">
+          {%- for country in localization.available_countries -%}
+            <option
+              value="{{ country.iso_code }}"
+              {% if country.iso_code == localization.country.iso_code %}
+                selected
+              {% endif %}
+            >
+              {{ country.name }} ({{ country.currency.iso_code }})
+            </option>
+          {%- endfor -%}
+        </select>
+      </form>
+    {%- endif -%}
+  </div>
+</header>
+
+{% schema %}
+{
+  "name": "t:sections.header.name",
+  "settings": []
+}
+{% endschema %}

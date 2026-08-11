@@ -6,7 +6,11 @@
   "overrides": [
     {
       "files": "*.liquid",
-      "options": { "parser": "liquid-html", "printWidth": 120 }
+      "options": {
+        "parser": "liquid-html",
+        "printWidth": 120,
+        "singleQuote": false
+      }
     }
   ]
 }

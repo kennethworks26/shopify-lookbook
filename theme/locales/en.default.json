@@ -1,0 +1,35 @@
+{
+  "general": {
+    "accessibility": {
+      "skip_to_content": "Skip to content"
+    },
+    "meta": {
+      "tags": "Tagged \"{{ tags }}\"",
+      "page": "Page {{ page }}"
+    },
+    "404": {
+      "title": "Page not found",
+      "body": "The page you were looking for doesn't exist.",
+      "link": "Continue shopping"
+    }
+  },
+  "products": {
+    "product": {
+      "add_to_cart": "Add to cart",
+      "sold_out": "Sold out",
+      "regular_price": "Regular price",
+      "sale_price": "Sale price",
+      "vendor": "Vendor"
+    }
+  },
+  "sections": {
+    "lookbook": {
+      "placeholder_title": "No lookbook selected",
+      "placeholder_body": "Choose a lookbook in this section's settings. Until you do, customers see nothing here."
+    },
+    "lookbook_product": {
+      "placeholder_title": "This product isn't in any lookbook",
+      "placeholder_body": "Add \"{{ product }}\" to a lookbook in Content → Metaobjects → Lookbooks. Until then, customers see nothing here."
+    }
+  }
+}

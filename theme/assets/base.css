@@ -1,0 +1,231 @@
+/*
+ * Theme base styles.
+ *
+ * Hand-written and unbundled: this file is served to the browser byte-for-byte as it
+ * appears in the repo. Tailwind is confined to the lookbook island (lookbook.css) so
+ * that a section cannot restyle the page around it. See
+ * docs/adr/0004-tailwind-without-preflight.md.
+ *
+ * The custom properties below are static fallbacks. layout/theme.liquid overrides
+ * them with merchant settings in an inline {% style %} block, because Liquid is not
+ * rendered inside .css files.
+ */
+
+:root {
+  --font-body: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-heading: var(--font-body);
+  --page-width: 1400px;
+
+  --color-ink: #1a1a1a;
+  --color-muted: #6b6b6b;
+  --color-line: #e5e5e5;
+  --color-bg: #ffffff;
+
+  --space-gutter: 1.5rem;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--color-ink);
+  background: var(--color-bg);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-heading);
+  line-height: 1.2;
+  margin: 0;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: inherit;
+}
+
+/* Visible only to assistive technology, and to sighted users on keyboard focus. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-to-content {
+  position: absolute;
+  top: -100%;
+  left: 0;
+  z-index: 10;
+  padding: 0.75rem 1rem;
+  background: var(--color-ink);
+  color: #fff;
+}
+
+.skip-to-content:focus {
+  top: 0;
+}
+
+/* Layout ------------------------------------------------------------------ */
+
+.header__inner,
+.footer__inner,
+.lookbook-section__inner,
+.product {
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding-inline: var(--space-gutter);
+}
+
+.header {
+  border-bottom: 1px solid var(--color-line);
+}
+
+.header__inner {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding-block: 1rem;
+}
+
+.header__logo {
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.header__nav {
+  display: flex;
+  gap: 1.25rem;
+  margin-inline-end: auto;
+}
+
+.header__market select {
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--color-line);
+  background: var(--color-bg);
+  font: inherit;
+}
+
+.footer {
+  margin-top: 4rem;
+  border-top: 1px solid var(--color-line);
+}
+
+.footer__inner {
+  padding-block: 2rem;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+}
+
+/* Product ----------------------------------------------------------------- */
+
+.product {
+  display: grid;
+  gap: 2.5rem;
+  padding-block: 2.5rem;
+}
+
+@media (min-width: 750px) {
+  .product {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.product__vendor {
+  margin: 0 0 0.25rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-muted);
+}
+
+.product__title {
+  font-size: 1.75rem;
+}
+
+.product__price {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-block: 1rem;
+}
+
+.product__price-sale {
+  color: #b3261e;
+}
+
+.product__price-was {
+  color: var(--color-muted);
+}
+
+.product__submit {
+  padding: 0.85rem 1.5rem;
+  border: 0;
+  background: var(--color-ink);
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.product__submit[disabled] {
+  background: var(--color-muted);
+  cursor: not-allowed;
+}
+
+/* Lookbook section shell -------------------------------------------------- */
+
+/*
+ * The island's own styling is Tailwind, compiled into lookbook.css. These rules
+ * cover only the Liquid-rendered shell around it: spacing driven by section
+ * settings, the editor placeholder, and the no-JavaScript fallback.
+ */
+
+.lookbook-section {
+  padding-block: var(--lookbook-padding-top, 48px) var(--lookbook-padding-bottom, 48px);
+}
+
+.lookbook-mount + .lookbook-mount {
+  margin-top: 3rem;
+}
+
+.lookbook-placeholder {
+  border: 1px dashed var(--color-line);
+  padding: 1.5rem;
+}
+
+.lookbook-placeholder__title {
+  margin: 0;
+  font-weight: 600;
+}
+
+.lookbook-placeholder__body {
+  margin: 0.25rem 0 0;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+}
+
+.lookbook-fallback__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 0;
+  margin: 1rem 0 0;
+  list-style: none;
+}

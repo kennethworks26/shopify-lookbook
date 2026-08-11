@@ -1,0 +1,91 @@
+{
+  "settings_schema": {
+    "storefront_api": {
+      "name": "Storefront API",
+      "info": "The lookbook sections fetch product data at runtime through the Storefront API. Without a token they will render nothing on the storefront and show guidance here in the editor.",
+      "token": {
+        "label": "Storefront API access token",
+        "info": "Settings → Apps and sales channels → Develop apps → your app → API credentials → Storefront API access token. This token is public by design and grants read-only access to published products. Never paste an Admin API token here."
+      },
+      "version": {
+        "label": "API version",
+        "info": "Pinned so a Shopify release cannot silently change the response shape. Shopify versions quarterly as YYYY-MM."
+      }
+    },
+    "typography": {
+      "name": "Typography",
+      "body_font": {
+        "label": "Body font"
+      },
+      "heading_font": {
+        "label": "Heading font"
+      }
+    },
+    "layout": {
+      "name": "Layout",
+      "page_width": {
+        "label": "Page width"
+      }
+    }
+  },
+  "sections": {
+    "lookbook": {
+      "name": "Lookbook",
+      "presets": {
+        "name": "Lookbook"
+      },
+      "settings": {
+        "lookbook": {
+          "label": "Lookbook",
+          "info": "Manage lookbooks in Content → Metaobjects → Lookbooks."
+        },
+        "header_layout": "Layout",
+        "header_content": "Content",
+        "header_spacing": "Spacing",
+        "columns_desktop": {
+          "label": "Columns on desktop"
+        },
+        "columns_mobile": {
+          "label": "Columns on mobile"
+        },
+        "show_description": {
+          "label": "Show description"
+        },
+        "show_price": {
+          "label": "Show price"
+        },
+        "show_compare_at": {
+          "label": "Show compare-at price",
+          "info": "Shown only when the compare-at price is higher than the current price in the shopper's market."
+        },
+        "show_vendor": {
+          "label": "Show vendor"
+        },
+        "padding_top": {
+          "label": "Top padding"
+        },
+        "padding_bottom": {
+          "label": "Bottom padding"
+        }
+      }
+    },
+    "lookbook_product": {
+      "name": "Lookbook (product page)",
+      "presets": {
+        "name": "Lookbook (product page)"
+      },
+      "settings": {
+        "explanation": "This section shows the lookbooks that contain the product being viewed, up to two of them, ordered by each lookbook's priority. There is no lookbook picker: which lookbooks apply is a property of the product, not of this placement."
+      }
+    },
+    "main_product": {
+      "name": "Product information"
+    },
+    "header": {
+      "name": "Header"
+    },
+    "footer": {
+      "name": "Footer"
+    }
+  }
+}
