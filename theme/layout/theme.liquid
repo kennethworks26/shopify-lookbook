@@ -11,9 +11,26 @@
       {% unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless %}
     </title>
 
-    {%- if page_description -%}
-      <meta name="description" content="{{ page_description | escape }}">
-    {%- endif -%}
+    {%- comment -%}
+      Fall back to the shop description, then to a sentence built from the shop
+      name. `page_description` is empty on the home page unless a merchant fills
+      it in, and a page with no description at all is a page search engines and
+      link previews have to guess about.
+    {%- endcomment -%}
+    {%- liquid
+      assign meta_description = page_description | default: shop.description
+      if meta_description == blank
+        assign meta_description = shop.name | append: ' — curated lookbooks and seasonal edits.'
+      endif
+    -%}
+    <meta name="description" content="{{ meta_description | strip_html | escape }}">
+
+    {%- comment -%}
+      Favicon. An SVG served through asset_url so it is CDN-cached like every
+      other asset — a data URI would inline it into every page and theme check
+      flags it. A store with a real brand would replace this mark with its own.
+    {%- endcomment -%}
+    <link rel="icon" type="image/svg+xml" href="{{ 'favicon.svg' | asset_url }}">
 
     {%- comment -%}
       Preconnect to the CDN that will serve product imagery. The lookbook fetches its

@@ -26,7 +26,6 @@ places:
 | **Description**     | A sentence or two under the heading. Optional.        |
 | **Product handles** | One handle per line, in the order you want them shown |
 | **Priority**        | A number. Lower numbers win — see below.              |
-| **Cover image**     | Optional editorial image for the lookbook             |
 
 ### Finding a product's handle
 

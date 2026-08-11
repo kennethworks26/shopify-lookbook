@@ -253,8 +253,16 @@ a {
   padding-block: var(--lookbook-padding-top, 48px) var(--lookbook-padding-bottom, 48px);
 }
 
-.lookbook-mount + .lookbook-mount {
-  margin-top: 3rem;
+/*
+ * Space between lookbooks on a product page, where two render one after another.
+ *
+ * Keyed off the wrapper rather than the mount node. The previous rule paired
+ * adjacent mounts directly, and silently stopped applying when the header moved
+ * out of the mount — an adjacent-sibling selector is only as stable as the
+ * markup between the two elements.
+ */
+.lookbook-entry + .lookbook-entry {
+  margin-top: 4rem;
 }
 
 .lookbook-placeholder {
@@ -475,9 +483,19 @@ a {
   display: block;
   width: 100%;
   max-width: none;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
   margin-bottom: 1.5rem;
+  object-fit: cover;
+  /*
+   * 2:1 rather than something wider. Covers are product photographs, which are
+   * portrait — cropping a full-body shot to 16:9 takes a thin band out of the
+   * middle and loses whatever the picture was of.
+   */
+  aspect-ratio: 2 / 1;
+  /*
+   * Bias the crop upward. Centred, a portrait garment shot crops to the hem;
+   * 30% keeps the shoulders and face, which is where the eye goes.
+   */
+  object-position: center 30%;
 }
 
 .lookbook-header__title {

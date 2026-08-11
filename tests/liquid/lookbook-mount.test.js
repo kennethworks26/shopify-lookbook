@@ -6,9 +6,9 @@ import path from 'node:path';
 /**
  * Tests for the mount snippet — the boundary between Liquid and React.
  *
- * Two things happen here that nothing else covers. The header (cover image,
- * title, description) is rendered server-side so it paints with the document
- * rather than waiting on hydration, and the section's configuration is handed to
+ * Two things happen here that nothing else covers. The header (title and
+ * description) is rendered server-side so it paints with the document rather
+ * than waiting on hydration, and the section's configuration is handed to
  * React as JSON in a data attribute.
  *
  * Runs the real `theme/snippets/lookbook-mount.liquid`.
@@ -37,7 +37,6 @@ function lookbook(overrides = {}) {
     description: { rendered: 'Transitional weight, worn together.' },
     product_handles: { value: ['camel-wool-overcoat', 'rust-bomber-jacket'] },
     priority: { value: 10 },
-    cover_image: null,
     ...overrides,
   };
 }
@@ -103,6 +102,14 @@ describe('the server-rendered header', () => {
     expect(html).toContain('<h2 class="lookbook-header__title">Autumn Layers</h2>');
   });
 
+  it('wraps header and mount together so two lookbooks can be spaced apart', async () => {
+    // A product page renders two of these in a row. Spacing keys off this
+    // wrapper; without it the only separator was an adjacent-sibling rule that
+    // broke as soon as the header moved out of the mount node.
+    const html = await render();
+    expect(html).toContain('class="lookbook-entry"');
+  });
+
   it('renders the description', async () => {
     const html = await render();
     expect(html).toContain('Transitional weight, worn together.');
@@ -112,25 +119,6 @@ describe('the server-rendered header', () => {
     const html = await render({ settings: { show_description: false } });
     expect(html).not.toContain('Transitional weight, worn together.');
     expect(html).toContain('Autumn Layers');
-  });
-
-  it('renders the cover image with intrinsic dimensions', async () => {
-    // Dimensions let the browser reserve the box, which matters most for the
-    // element most likely to be the page's largest contentful paint.
-    const html = await render({
-      entry: lookbook({
-        cover_image: { value: { src: 'https://cdn/cover.jpg', width: 1600, height: 900, alt: '' } },
-      }),
-    });
-
-    expect(html).toContain('lookbook-header__image');
-    expect(html).toContain('width="1600"');
-    expect(html).toContain('height="900"');
-  });
-
-  it('renders no image when no cover image is set', async () => {
-    const html = await render();
-    expect(html).not.toContain('lookbook-header__image');
   });
 
   it('defaults to h2, for pages that already have an h1', async () => {

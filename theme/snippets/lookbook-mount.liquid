@@ -83,64 +83,58 @@
     React owns only the product grid below, which is the part that genuinely has
     to wait for data.
   {%- endcomment -%}
-  <header class="lookbook-header">
-    {%- if lookbook.cover_image != blank -%}
-      {%- assign cover = lookbook.cover_image.value -%}
-      {%- if cover.width -%}
-        <img
-          class="lookbook-header__image"
-          src="{{ cover | image_url: width: 1600 }}"
-          alt="{{ cover.alt | default: lookbook.title.value | escape }}"
-          width="{{ cover.width }}"
-          height="{{ cover.height }}"
-          loading="eager"
-          fetchpriority="high"
-        >
+  {%- comment -%}
+    Header and mount are wrapped together. On a product page two lookbooks render
+    one after another, and without a wrapper the only thing separating them is an
+    adjacent-sibling rule — which stops matching the moment anything is added
+    between them. That is exactly what happened when the header moved out of the
+    mount node.
+  {%- endcomment -%}
+  <div class="lookbook-entry">
+    <header class="lookbook-header">
+      {%- comment -%}
+        Heading level is chosen by the caller, because the same lookbook is the
+        page's main heading in one place and a subheading in another.
+
+        On the home page the lookbook *is* the page, so its title is the h1. On a
+        product page the product title already holds the h1, so a second one there
+        would leave the page with two competing top-level headings — and a document
+        with no h1 at all is just as wrong, which is what the home page had before.
+      {%- endcomment -%}
+      {%- assign heading_tag = heading_level | default: 'h2' -%}
+
+      {%- if lookbook.title.value != blank -%}
+        <{{ heading_tag }} class="lookbook-header__title">{{ lookbook.title.value }}</{{ heading_tag }}>
       {%- endif -%}
-    {%- endif -%}
 
-    {%- comment -%}
-      Heading level is chosen by the caller, because the same lookbook is the
-      page's main heading in one place and a subheading in another.
+      {%- if section.settings.show_description and description_html != blank -%}
+        <div class="lookbook-header__description rte">{{ description_html }}</div>
+      {%- endif -%}
+    </header>
 
-      On the home page the lookbook *is* the page, so its title is the h1. On a
-      product page the product title already holds the h1, so a second one there
-      would leave the page with two competing top-level headings — and a document
-      with no h1 at all is just as wrong, which is what the home page had before.
-    {%- endcomment -%}
-    {%- assign heading_tag = heading_level | default: 'h2' -%}
+    <div class="lookbook-mount" data-lookbook="{{ lookbook_payload | strip | escape }}">
+      {%- comment -%}
+        Fallback for when JavaScript does not run.
 
-    {%- if lookbook.title.value != blank -%}
-      <{{ heading_tag }} class="lookbook-header__title">{{ lookbook.title.value }}</{{ heading_tag }}>
-    {%- endif -%}
-
-    {%- if section.settings.show_description and description_html != blank -%}
-      <div class="lookbook-header__description rte">{{ description_html }}</div>
-    {%- endif -%}
-  </header>
-
-  <div class="lookbook-mount" data-lookbook="{{ lookbook_payload | strip | escape }}">
-    {%- comment -%}
-      Fallback for when JavaScript does not run.
-
-      Deliberately no product titles, images, or prices here. The brief requires
-      product data to be fetched at runtime through the Storefront API, so rendering
-      it from Liquid -- even only as a fallback -- would quietly work around the
-      requirement. Product URLs are derivable from the handles we already hold, so a
-      shopper without JavaScript still gets the lookbook's title and a working link
-      per product, and nothing is served that should have come from the API.
-    {%- endcomment -%}
-    <noscript>
-      <h2 class="lookbook-fallback__heading">{{ lookbook.title.value }}</h2>
-      <ul class="lookbook-fallback__list">
-        {%- for handle in handles -%}
-          <li>
-            <a href="{{ routes.root_url }}products/{{ handle }}">
-              {{ handle | replace: '-', ' ' | capitalize }}
-            </a>
-          </li>
-        {%- endfor -%}
-      </ul>
-    </noscript>
+        Deliberately no product titles, images, or prices here. The brief requires
+        product data to be fetched at runtime through the Storefront API, so rendering
+        it from Liquid -- even only as a fallback -- would quietly work around the
+        requirement. Product URLs are derivable from the handles we already hold, so a
+        shopper without JavaScript still gets the lookbook's title and a working link
+        per product, and nothing is served that should have come from the API.
+      {%- endcomment -%}
+      <noscript>
+        <h2 class="lookbook-fallback__heading">{{ lookbook.title.value }}</h2>
+        <ul class="lookbook-fallback__list">
+          {%- for handle in handles -%}
+            <li>
+              <a href="{{ routes.root_url }}products/{{ handle }}">
+                {{ handle | replace: '-', ' ' | capitalize }}
+              </a>
+            </li>
+          {%- endfor -%}
+        </ul>
+      </noscript>
+    </div>
   </div>
 {%- endif -%}

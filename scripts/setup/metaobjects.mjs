@@ -58,13 +58,6 @@ const FIELDS = [
       'Lower numbers win. When a product belongs to more than two lookbooks, the two with the lowest priority are the ones shown on its product page. Use 10, 20, 30 so you can insert between them later.',
     required: true,
   },
-  {
-    key: 'cover_image',
-    name: 'Cover image',
-    type: 'file_reference',
-    description: 'Optional editorial image representing the lookbook.',
-    required: false,
-  },
 ];
 
 const DEFINITION_QUERY = `

@@ -17,6 +17,8 @@
     "lint:fix": "eslint . --fix",
     "theme:check": "shopify theme check --path theme --fail-level warning",
     "theme:push": "shopify theme push --path theme --unpublished --theme Lookbook",
+    "theme:deploy": "shopify theme push --path theme --live --allow-live",
+    "theme:pull": "shopify theme pull --path theme --live --only templates config",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "verify:bundle": "node scripts/verify-bundle.mjs",

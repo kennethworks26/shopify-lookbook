@@ -109,7 +109,6 @@ One metaobject type, `lookbook`:
 | `description`     | rich text                | Intro copy                                |
 | `product_handles` | list of single line text | **Handles only.** Order is display order. |
 | `priority`        | integer                  | Lower wins when capping to two            |
-| `cover_image`     | file reference           | Optional editorial image                  |
 
 Handles rather than product references is a requirement of the brief, and it carries a
 real cost — renaming a product handle silently drops it from every lookbook referencing
