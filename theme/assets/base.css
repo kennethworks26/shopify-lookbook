@@ -52,8 +52,18 @@ img {
   height: auto;
 }
 
+/*
+ * Navigation and interface links are not underlined. Their position and context
+ * already identify them — a nav bar, a product tile, a cart line — and an
+ * underline there is noise.
+ *
+ * Prose is the opposite case: a link inside a sentence has nothing but its
+ * styling to distinguish it, and colour alone fails anyone who cannot perceive
+ * the difference (WCAG 1.4.1). Those stay underlined, under `.rte` below.
+ */
 a {
   color: inherit;
+  text-decoration: none;
 }
 
 /* Visible only to assistive technology, and to sighted users on keyboard focus. */
@@ -116,11 +126,53 @@ a {
   margin-inline-end: auto;
 }
 
+/*
+ * Market selector. Styled rather than left to the browser, because a raw select
+ * next to hand-set type is the one control that gives a theme away.
+ *
+ * `appearance: none` removes the platform widget, so the chevron is drawn as an
+ * inline SVG background. Right padding leaves room for it.
+ */
+.header__market {
+  position: relative;
+  display: flex;
+}
+
 .header__market select {
-  padding: 0.4rem 0.5rem;
+  appearance: none;
+  padding: 0.5rem 2rem 0.5rem 0.75rem;
+  border: 1px solid var(--color-line);
+  border-radius: 2px;
+  background-color: var(--color-bg);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' fill='none' stroke='%236b6b6b' stroke-width='1.5'%3E%3Cpath d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 0.65rem;
+  font: inherit;
+  font-size: 0.875rem;
+  color: var(--color-ink);
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.header__market select:hover {
+  border-color: var(--color-muted);
+}
+
+/* The platform focus ring is removed with `appearance`, so it is redrawn here. */
+.header__market select:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
+.header__market noscript button {
+  margin-inline-start: 0.5rem;
+  padding: 0.5rem 0.75rem;
   border: 1px solid var(--color-line);
   background: var(--color-bg);
   font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
 }
 
 .footer {
@@ -402,6 +454,8 @@ a {
 
 .rte a {
   color: inherit;
+  /* Underlined on purpose — see the note on `a` above. */
+  text-decoration: underline;
 }
 
 /* Lookbook header --------------------------------------------------------- */

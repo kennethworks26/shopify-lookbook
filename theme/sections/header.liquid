@@ -25,19 +25,28 @@
     </nav>
 
     {%- if localization.available_countries.size > 1 -%}
-      <form method="post" action="{{ routes.root_url }}localization" class="header__market">
+      <form
+        method="post"
+        action="{{ routes.root_url }}localization"
+        class="header__market"
+        data-localization-form
+      >
         <input type="hidden" name="form_type" value="localization">
         <input type="hidden" name="_method" value="put">
         <input type="hidden" name="return_to" value="{{ request.path }}">
 
         <label class="visually-hidden" for="market-selector">Country/region</label>
         {%- comment -%}
-          Submits on change for the common case, with a real button behind
-          <noscript> for when it cannot. A select that only works with JavaScript
-          is a keyboard trap of a different kind: reachable, focusable, and unable
-          to do anything.
+          Submits on change via assets/localization-form.js, with a real button
+          behind <noscript> for when it cannot. A select that only works with
+          JavaScript is a keyboard trap of a different kind: reachable, focusable,
+          and unable to do anything.
+
+          Changing market is a full page load on purpose — the market drives
+          server-rendered prices as well as the lookbook island, so a client-side
+          swap would leave the two disagreeing.
         {%- endcomment -%}
-        <select id="market-selector" name="country_code" onchange="this.form.submit()">
+        <select id="market-selector" name="country_code">
           {%- for country in localization.available_countries -%}
             <option
               value="{{ country.iso_code }}"

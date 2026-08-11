@@ -42,6 +42,22 @@ export default [
     },
   },
 
+  // Hand-written theme scripts. Served to the browser exactly as committed —
+  // these are not bundled, so no JSX and no module syntax. The build output
+  // (assets/lookbook.js) is ignored above.
+  {
+    files: ['theme/assets/**/*.js'],
+    languageOptions: {
+      ecmaVersion: 2020,
+      sourceType: 'script',
+      globals: globals.browser,
+    },
+    rules: {
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
+      eqeqeq: ['error', 'always'],
+    },
+  },
+
   // Setup scripts and build tooling — run in Node.
   {
     files: ['scripts/**/*.mjs', '*.config.js'],
