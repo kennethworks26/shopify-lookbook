@@ -40,22 +40,19 @@
       {%- endif -%}
     </div>
 
-    {%- form 'product', product -%}
-      <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
-      <button
-        type="submit"
-        class="product__submit"
-        {% unless product.available %}
-          disabled
-        {% endunless %}
-      >
-        {%- if product.available -%}
-          {{ 'products.product.add_to_cart' | t }}
-        {%- else -%}
-          {{ 'products.product.sold_out' | t }}
-        {%- endif -%}
-      </button>
-    {%- endform -%}
+    {%- comment -%}
+      No add-to-cart button.
+
+      This store exists to demonstrate the lookbook feature; it is a development
+      store that cannot take real payments, and cart and checkout are outside the
+      brief. Its one location is point-of-sale only and Shopify locks online
+      fulfilment off for the default location, so every product reports as
+      unavailable to the storefront however much inventory says otherwise.
+
+      A permanently disabled "Sold out" button on every product would say
+      something false about the catalog. Showing no button says nothing at all,
+      which is accurate.
+    {%- endcomment -%}
 
     <div class="product__description rte">{{ product.description }}</div>
   </div>

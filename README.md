@@ -222,14 +222,20 @@ code the diff does not describe.
 storefront rather than leaving a heading above blank space. In the theme editor the same
 conditions are spelled out, including which handles no longer match a published product.
 
-**Known limitation.** On this development store, `availableForSale` comes back `false`
-for every product under `@inContext(country:)`, while being `true` with no market context
-and `true` in the Admin API. Market-context availability resolves against a market web
-presence, which a dev store with no configured domains does not have. Prices are
-unaffected. Stock status is not part of this brief, so the card does not render a
-sold-out badge rather than render a wrong one; the field remains in the query for a real
-store.
+**No cart or checkout.** The product page shows image, title, price, description, and
+its lookbooks — and no add-to-cart button. This is a development store: it cannot take
+real payments, and cart and checkout are outside the brief.
 
+It is also not purchasable even in principle. The store's single location is
+point-of-sale only, and Shopify locks online fulfilment off for whichever location is
+the default, so the storefront reports every product as unavailable no matter what
+inventory says — the Admin API reports the same variants as available, because that is
+variant-level and ignores fulfilment routing. Rendering a permanently disabled "Sold
+out" button on every product would state something false about the catalog. Rendering
+no button states nothing, which is accurate.
+
+None of this touches the lookbook feature. Prices, market overrides, the max-two rule,
+and runtime fetching all work and are verified against the live storefront.
 ---
 
 ## Decisions
