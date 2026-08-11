@@ -14,7 +14,7 @@ That pulls in three layers: `theme` (design tokens), `utilities` (the utility cl
 and `preflight` — a global reset that normalises margins, heading sizes, list styling,
 border defaults, and more across every element on the page.
 
-The complication is where this stylesheet ends up. It is loaded by a *section*. A section
+The complication is where this stylesheet ends up. It is loaded by a _section_. A section
 owns one region of one page. The theme owns its own base styles in `assets/base.css`, and
 the header, footer, and product information section are all plain Liquid and hand-written
 CSS that know nothing about Tailwind.
@@ -48,7 +48,7 @@ rewriting it. The maintenance burden lands on whoever next upgrades Tailwind.
 **Use Tailwind for the whole theme.** Defensible on a project where the team already
 lives in Tailwind. Rejected here because it would put a build step in front of every
 stylesheet in the theme to serve one section, and ADR-0001 exists to keep that blast
-radius small. This is a judgement about *this* theme, not a claim that Tailwind is wrong.
+radius small. This is a judgement about _this_ theme, not a claim that Tailwind is wrong.
 
 ## Consequences
 

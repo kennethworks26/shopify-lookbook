@@ -15,11 +15,11 @@ The order matters in two places, both called out below.
 
 Partner dashboard → **Stores** → **Create store** → **Dev**.
 
-| Field | Choose | Why |
-| --- | --- | --- |
-| Store name | anything | Becomes the permanent `.myshopify.com` domain |
-| Shopify plan | **Advanced** | Free on a dev store. Guarantees the full Markets feature set, including per-market catalogs and price lists. |
-| Generate test data | **off** | Prefab data is noise, and it hides which content is yours |
+| Field              | Choose       | Why                                                                                                          |
+| ------------------ | ------------ | ------------------------------------------------------------------------------------------------------------ |
+| Store name         | anything     | Becomes the permanent `.myshopify.com` domain                                                                |
+| Shopify plan       | **Advanced** | Free on a dev store. Guarantees the full Markets feature set, including per-market catalogs and price lists. |
+| Generate test data | **off**      | Prefab data is noise, and it hides which content is yours                                                    |
 
 Development stores are free and unlimited, but they are password-protected and cannot
 take real payments.
@@ -28,15 +28,15 @@ take real payments.
 
 **Settings → General.**
 
-| Setting | Set to |
-| --- | --- |
+| Setting                                      | Set to                        |
+| -------------------------------------------- | ----------------------------- |
 | Currency display → ⋯ → Change store currency | **Australian Dollar (AUD $)** |
-| Store address | Australia |
-| Unit system | Metric, kilograms |
-| Time zone | (GMT+10:00) Melbourne |
+| Store address                                | Australia                     |
+| Unit system                                  | Metric, kilograms             |
+| Time zone                                    | (GMT+10:00) Melbourne         |
 
 **Do this before seeding prices** if you can — though it is not fatal if you forget.
-Changing store currency *relabels* existing prices rather than converting them, so a
+Changing store currency _relabels_ existing prices rather than converting them, so a
 product seeded at `229.00` becomes `A$229.00`. No reseed needed.
 
 ## 3. Activate a payment provider
@@ -69,14 +69,14 @@ Then **Create a legacy custom app**, named **`Lookbook Feature`**.
 **Configuration → Admin API integration.** Ticking a `write_` scope selects its `read_`
 counterpart automatically, so tick these six:
 
-| Scope | Needed for |
-| --- | --- |
-| `write_products` | seeding the catalog |
-| `write_metaobject_definitions` | creating the lookbook schema |
-| `write_metaobjects` | creating lookbook entries |
-| `write_markets` | AU and JP markets, catalogs, price lists |
-| `write_publications` | publishing products to sales channels |
-| `write_inventory` | turning inventory tracking off |
+| Scope                          | Needed for                               |
+| ------------------------------ | ---------------------------------------- |
+| `write_products`               | seeding the catalog                      |
+| `write_metaobject_definitions` | creating the lookbook schema             |
+| `write_metaobjects`            | creating lookbook entries                |
+| `write_markets`                | AU and JP markets, catalogs, price lists |
+| `write_publications`           | publishing products to sales channels    |
+| `write_inventory`              | turning inventory tracking off           |
 
 Plus `read_themes` on its own, for verification. Thirteen selected in total. Save.
 
@@ -163,13 +163,13 @@ npm run lint && npm test && npm run verify:bundle
 
 Then, on the storefront:
 
-| Check | Expect |
-| --- | --- |
-| Home page | Autumn Layers, five products, prices in A$ |
-| Network tab | a request to `/api/2026-07/graphql.json` — product data arrives at runtime, not in the HTML |
-| `/products/rust-bomber-jacket` | exactly **two** lookbooks: Autumn Layers and Weekend Edit |
-| Switch market to Japan | prices become ¥, zero decimals, at price-list values — not conversions |
-| A product in no lookbook | nothing on the storefront; guidance in the theme editor |
+| Check                          | Expect                                                                                      |
+| ------------------------------ | ------------------------------------------------------------------------------------------- |
+| Home page                      | Autumn Layers, five products, prices in A$                                                  |
+| Network tab                    | a request to `/api/2026-07/graphql.json` — product data arrives at runtime, not in the HTML |
+| `/products/rust-bomber-jacket` | exactly **two** lookbooks: Autumn Layers and Weekend Edit                                   |
+| Switch market to Japan         | prices become ¥, zero decimals, at price-list values — not conversions                      |
+| A product in no lookbook       | nothing on the storefront; guidance in the theme editor                                     |
 
 ---
 
@@ -177,7 +177,7 @@ Then, on the storefront:
 
 **The Storefront API returns an empty product list, with a valid 200 and no error.**
 The products are not published to the custom app's own sales channel. A custom app's
-Storefront token sees only products published to *that app's* channel — not merely
+Storefront token sees only products published to _that app's_ channel — not merely
 anything on the Online Store. The admin will show the products as published and live
 throughout. `setup:catalog` publishes to both channels and fails loudly if the app
 channel is missing.

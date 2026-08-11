@@ -7,12 +7,12 @@ the shopper's market.
 
 Built for the Convert Digital technical assessment. No third-party apps.
 
-| | |
-| --- | --- |
-| **Store** | `convert-digital-john-kenneth-fernandez.myshopify.com` |
-| **Theme** | `Lookbook` (unpublished, id `153449037959`) |
-| **Markets** | Australia (AUD, primary) · Japan (JPY) |
-| **API version** | `2026-07`, pinned |
+|                 |                                                        |
+| --------------- | ------------------------------------------------------ |
+| **Store**       | `convert-digital-john-kenneth-fernandez.myshopify.com` |
+| **Theme**       | `Lookbook` (unpublished, id `153449037959`)            |
+| **Markets**     | Australia (AUD, primary) · Japan (JPY)                 |
+| **API version** | `2026-07`, pinned                                      |
 
 ---
 
@@ -98,13 +98,13 @@ Full reasoning in [ADR-0003](docs/adr/0003-liquid-selects-react-fetches.md).
 
 One metaobject type, `lookbook`:
 
-| Field | Type | Purpose |
-| --- | --- | --- |
-| `title` | single line text | Display heading |
-| `description` | rich text | Intro copy |
+| Field             | Type                     | Purpose                                   |
+| ----------------- | ------------------------ | ----------------------------------------- |
+| `title`           | single line text         | Display heading                           |
+| `description`     | rich text                | Intro copy                                |
 | `product_handles` | list of single line text | **Handles only.** Order is display order. |
-| `priority` | integer | Lower wins when capping to two |
-| `cover_image` | file reference | Optional editorial image |
+| `priority`        | integer                  | Lower wins when capping to two            |
+| `cover_image`     | file reference           | Optional editorial image                  |
 
 Handles rather than product references is a requirement of the brief, and it carries a
 real cost — renaming a product handle silently drops it from every lookbook referencing
@@ -112,7 +112,7 @@ it. [ADR-0002](docs/adr/0002-handles-not-product-references.md) records the trad
 
 ### The "maximum of two" rule
 
-The brief caps product pages at two lookbooks but never says *which* two, and "whichever
+The brief caps product pages at two lookbooks but never says _which_ two, and "whichever
 two Shopify returns" is not a rule — admin ordering is not a contract. So:
 
 1. keep lookbooks whose `product_handles` contains this product's handle
@@ -136,11 +136,11 @@ formats them. Nothing in the bundle multiplies a price by anything.
 
 The JPY figures are deliberately not conversions:
 
-| Product | Australia | Japan | implied rate | compare-at rate |
-| --- | --- | --- | --- | --- |
-| Camel Wool Overcoat | A$689 | ¥78,000 | 113.2 | 108.4 |
-| Rust Bomber Jacket | A$349 | ¥39,800 | 114.0 | **121.2** |
-| Monk Strap Shoe | A$389 | ¥44,000 | 113.1 | 115.4 |
+| Product             | Australia | Japan   | implied rate | compare-at rate |
+| ------------------- | --------- | ------- | ------------ | --------------- |
+| Camel Wool Overcoat | A$689     | ¥78,000 | 113.2        | 108.4           |
+| Rust Bomber Jacket  | A$349     | ¥39,800 | 114.0        | **121.2**       |
+| Monk Strap Shoe     | A$389     | ¥44,000 | 113.1        | 115.4           |
 
 Rates differ per product, and on the same product the compare-at rate differs from the
 price rate. No single conversion could produce those numbers — which is the point. It is
@@ -184,11 +184,11 @@ docs/adr/                architecture decision records
 
 85 tests. Coverage thresholds are enforced in CI at 80% of `src/`.
 
-| Level | What it covers |
-| --- | --- |
-| Unit | JPY zero-decimal formatting; compare-at only when strictly higher; handle validation rejecting GraphQL injection; batching; retry-once; GraphQL errors arriving with HTTP 200 |
-| Component | loading / empty / error states; merchant diagnostics in the theme editor; static Tailwind column classes |
-| Liquid | the max-two rule against the real `.liquid` file — priority order, numeric-vs-lexicographic padding, handle tie-breaks, 0/1/3 membership |
+| Level     | What it covers                                                                                                                                                                |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Unit      | JPY zero-decimal formatting; compare-at only when strictly higher; handle validation rejecting GraphQL injection; batching; retry-once; GraphQL errors arriving with HTTP 200 |
+| Component | loading / empty / error states; merchant diagnostics in the theme editor; static Tailwind column classes                                                                      |
+| Liquid    | the max-two rule against the real `.liquid` file — priority order, numeric-vs-lexicographic padding, handle tie-breaks, 0/1/3 membership                                      |
 
 The two things most likely to be probed in review — the max-two rule and market pricing —
 are tested directly rather than incidentally.

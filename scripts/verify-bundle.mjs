@@ -44,9 +44,7 @@ if (missing.length > 0) {
  * off an unstaged entry first. Naming the files we already know about sidesteps
  * that entirely and cannot misreport a path.
  */
-const dirty = ARTIFACTS.filter(
-  (file) => run('git', ['status', '--porcelain', '--', file]) !== ''
-);
+const dirty = ARTIFACTS.filter((file) => run('git', ['status', '--porcelain', '--', file]) !== '');
 
 if (dirty.length > 0) {
   fail(

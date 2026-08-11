@@ -63,7 +63,7 @@ already doing.
   away from it — and this is the behaviour most likely to be checked in review.
 
 - **Selection and rendering are in the same snippet.** Liquid's `render` cannot return a
-  value, so a snippet that only *computed* the matches would leave its caller unable to
+  value, so a snippet that only _computed_ the matches would leave its caller unable to
   see them. The alternative — computing in the snippet and again in the section — is
   exactly how two implementations of "max two" drift apart. So `lookbook-match.liquid`
   owns both.

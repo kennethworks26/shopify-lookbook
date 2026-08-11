@@ -20,13 +20,13 @@ places:
 
 **Content → Metaobjects → Lookbooks → Add entry.**
 
-| Field | What to put in it |
-| --- | --- |
-| **Title** | The heading shoppers see, e.g. *Autumn Layers* |
-| **Description** | A sentence or two under the heading. Optional. |
+| Field               | What to put in it                                     |
+| ------------------- | ----------------------------------------------------- |
+| **Title**           | The heading shoppers see, e.g. _Autumn Layers_        |
+| **Description**     | A sentence or two under the heading. Optional.        |
 | **Product handles** | One handle per line, in the order you want them shown |
-| **Priority** | A number. Lower numbers win — see below. |
-| **Cover image** | Optional editorial image for the lookbook |
+| **Priority**        | A number. Lower numbers win — see below.              |
+| **Cover image**     | Optional editorial image for the lookbook             |
 
 ### Finding a product's handle
 
@@ -56,7 +56,7 @@ want seen first — it lands top-left, which is where eyes go.
 
 1. Make sure you are on the **Home page** (top dropdown).
 2. **Add section → Lookbook**.
-3. In the section's settings, click **Select** next to *Lookbook* and pick yours.
+3. In the section's settings, click **Select** next to _Lookbook_ and pick yours.
 4. **Save**.
 
 You can adjust columns, whether prices show, spacing, and so on. If you leave the
@@ -80,15 +80,15 @@ From then on, any product that belongs to a lookbook will show it on its page.
 
 When there are more than two, the ones with the **lowest priority numbers** win.
 
-Worked example — *Rust Bomber Jacket* is in all three:
+Worked example — _Rust Bomber Jacket_ is in all three:
 
-| Lookbook | Priority | Shows on the product page? |
-| --- | --- | --- |
-| Autumn Layers | 10 | Yes |
-| Weekend Edit | 20 | Yes |
-| Monochrome Study | 30 | No — third place |
+| Lookbook         | Priority | Shows on the product page? |
+| ---------------- | -------- | -------------------------- |
+| Autumn Layers    | 10       | Yes                        |
+| Weekend Edit     | 20       | Yes                        |
+| Monochrome Study | 30       | No — third place           |
 
-To promote *Monochrome Study* on that page, give it a lower number than 20.
+To promote _Monochrome Study_ on that page, give it a lower number than 20.
 
 **Use 10, 20, 30 rather than 1, 2, 3.** That leaves room to slot a new lookbook between
 two existing ones later without renumbering everything.
@@ -124,10 +124,10 @@ market when building a lookbook.
 
 ## Quick checks
 
-| You want to | Do this |
-| --- | --- |
-| Add a product to a lookbook | Content → Metaobjects → Lookbooks → edit → add its handle |
-| Reorder products | Reorder the handles |
-| Swap which lookbook is on the home page | Themes → Customize → Lookbook section → Select |
-| Change which two show on product pages | Adjust the **Priority** numbers |
-| See why a product is missing | Open the page in Themes → Customize and read the notice |
+| You want to                             | Do this                                                   |
+| --------------------------------------- | --------------------------------------------------------- |
+| Add a product to a lookbook             | Content → Metaobjects → Lookbooks → edit → add its handle |
+| Reorder products                        | Reorder the handles                                       |
+| Swap which lookbook is on the home page | Themes → Customize → Lookbook section → Select            |
+| Change which two show on product pages  | Adjust the **Priority** numbers                           |
+| See why a product is missing            | Open the page in Themes → Customize and read the notice   |

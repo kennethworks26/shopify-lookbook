@@ -26,7 +26,7 @@ data is fetched at runtime through the Storefront API and never rendered from Li
 
 The requirement is followed as written, including in the places where it would be easy to
 quietly work around — the no-JavaScript fallback in `lookbook-mount.liquid` renders
-product *links* built from the handles it already has, and deliberately no titles,
+product _links_ built from the handles it already has, and deliberately no titles,
 images, or prices, because those would have to come from Liquid.
 
 ## Alternatives considered

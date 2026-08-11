@@ -44,10 +44,10 @@ team; for a single-developer assessment it adds a moving part without removing o
 ## Consequences
 
 - **Committed artifacts drift.** Someone edits source, forgets to rebuild, and the
-  storefront runs yesterday's code while the diff claims otherwise. `npm run
-  verify:bundle` rebuilds from scratch in CI and fails if git sees any movement in the
-  two artifacts. That gate exists from the first commit that produced a bundle, not
-  bolted on afterwards.
+  storefront runs yesterday's code while the diff claims otherwise. The
+  `verify:bundle` script rebuilds from scratch in CI and fails if git sees any
+  movement in the two artifacts. It is the last step of the pipeline in
+  `.github/workflows/ci.yml`, and nothing else there would catch this.
 
 - **`process.env.NODE_ENV` must be defined explicitly.** Vite does not substitute it in
   library mode, and React picks its development or production build by reading it.

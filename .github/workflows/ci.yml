@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# A second push to the same branch makes the first run irrelevant.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # `ci` rather than `install`: it installs exactly what the lockfile pins and
+      # fails if package.json and the lockfile disagree, which `install` would
+      # quietly paper over by rewriting the lockfile.
+      - name: Install
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Format check
+        run: npm run format:check
+
+      - name: Test
+        run: npm test
+
+      # Rebuilds from scratch and fails if the committed build output moved.
+      #
+      # This is the gate that matters most in this repo. Shopify serves
+      # theme/assets/ from what `theme push` uploads, so the built files have to
+      # be committed — which means they can drift from their source. When that
+      # happens the storefront runs code the diff does not describe, and nothing
+      # else in this pipeline would notice.
+      - name: Verify committed bundle matches source
+        run: npm run verify:bundle
