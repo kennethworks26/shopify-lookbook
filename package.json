@@ -1,0 +1,54 @@
+{
+  "name": "shopify-lookbook",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Lookbook feature for Shopify Online Store 2.0 — metaobjects, Storefront API, React 19 island. See docs/spec.md.",
+  "engines": {
+    "node": ">=20.11"
+  },
+  "scripts": {
+    "build": "vite build",
+    "build:watch": "vite build --watch",
+    "dev": "shopify theme dev --path theme",
+    "test": "vitest run --coverage",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "lint": "eslint . && npm run theme:check",
+    "lint:fix": "eslint . --fix",
+    "theme:check": "shopify theme check --path theme --fail-level warning",
+    "theme:push": "shopify theme push --path theme --unpublished",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "verify:bundle": "node scripts/verify-bundle.mjs",
+    "setup:metaobjects": "node scripts/setup/metaobjects.mjs",
+    "setup:catalog": "node scripts/setup/catalog.mjs",
+    "setup:markets": "node scripts/setup/markets.mjs",
+    "setup:lookbooks": "node scripts/setup/lookbooks.mjs"
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "@playwright/test": "^1.49.0",
+    "@shopify/cli": "^3.75.0",
+    "@shopify/prettier-plugin-liquid": "^1.9.0",
+    "@tailwindcss/vite": "^4.0.0",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.6.0",
+    "@testing-library/react": "^16.1.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    "@vitest/coverage-v8": "^2.1.8",
+    "eslint": "^9.17.0",
+    "eslint-plugin-react": "^7.37.0",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "globals": "^15.14.0",
+    "jsdom": "^25.0.1",
+    "prettier": "^3.4.2",
+    "tailwindcss": "^4.0.0",
+    "vite": "^6.0.0",
+    "vitest": "^2.1.8"
+  }
+}

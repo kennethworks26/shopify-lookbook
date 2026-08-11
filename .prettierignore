@@ -1,0 +1,9 @@
+node_modules/
+coverage/
+playwright-report/
+test-results/
+package-lock.json
+
+# Build output — formatting generated code creates noise in every diff.
+theme/assets/lookbook.js
+theme/assets/lookbook.css

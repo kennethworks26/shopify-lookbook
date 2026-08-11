@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Secrets — never commit. See .env.example for the required shape.
+.env
+.env.*
+!.env.example
+
+# Shopify CLI
+.shopify/
+*.log
+
+# Test output
+coverage/
+playwright-report/
+test-results/
+blob-report/
+.playwright/
+
+# Local working notes — planning scratch, not part of the deliverable
+tasks/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
