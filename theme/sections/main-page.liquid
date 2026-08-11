@@ -1,0 +1,17 @@
+{%- comment -%}
+  Static page. Covers the header's contact link and any other page a merchant adds.
+{%- endcomment -%}
+
+<div class="page">
+  <h1 class="page__title">{{ page.title }}</h1>
+  <div class="page__content rte">{{ page.content }}</div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.main_page.name",
+  "tag": "section",
+  "class": "main-page",
+  "settings": []
+}
+{% endschema %}

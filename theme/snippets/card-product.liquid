@@ -1,0 +1,55 @@
+{%- comment -%}
+  A product card for Liquid-rendered listings (collection, search).
+
+  Deliberately separate from the React card in src/lookbook/ProductCard.jsx. They
+  look alike but answer different questions: this one renders data Liquid already
+  has, while the React card renders data fetched from the Storefront API at
+  runtime because the brief requires lookbooks to work that way.
+
+  Sharing one implementation would mean either dragging React onto pages that do
+  not need it, or rendering lookbooks from Liquid and breaking the requirement.
+  Two small components is the cheaper answer.
+
+  Accepts:
+    product - {Object} the product to render
+    loading - {String} 'eager' for above-the-fold cards, otherwise 'lazy'
+{%- endcomment -%}
+
+<article class="card-product">
+  <a href="{{ product.url }}" class="card-product__link">
+    <div class="card-product__media">
+      {%- if product.featured_media -%}
+        <img
+          src="{{ product.featured_media | image_url: width: 700 }}"
+          alt="{{ product.featured_media.alt | escape }}"
+          width="{{ product.featured_media.width }}"
+          height="{{ product.featured_media.height }}"
+          loading="{{ loading | default: 'lazy' }}"
+        >
+      {%- else -%}
+        <div class="card-product__media-placeholder"></div>
+      {%- endif -%}
+    </div>
+
+    <div class="card-product__info">
+      {%- if product.vendor != blank -%}
+        <p class="card-product__vendor">{{ product.vendor }}</p>
+      {%- endif -%}
+
+      <h3 class="card-product__title">{{ product.title }}</h3>
+
+      <p class="card-product__price">
+        {%- comment -%}
+          `money_with_currency` renders in the active market's currency, so this
+          agrees with the lookbook grid without either one converting anything.
+        {%- endcomment -%}
+        {%- if product.compare_at_price > product.price -%}
+          <span class="card-product__price-sale">{{ product.price | money_with_currency }}</span>
+          <s>{{ product.compare_at_price | money_with_currency }}</s>
+        {%- else -%}
+          {{ product.price | money_with_currency }}
+        {%- endif -%}
+      </p>
+    </div>
+  </a>
+</article>

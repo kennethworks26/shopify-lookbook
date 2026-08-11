@@ -11,6 +11,10 @@
       "title": "Page not found",
       "body": "The page you were looking for doesn't exist.",
       "link": "Continue shopping"
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next"
     }
   },
   "products": {
@@ -30,6 +34,22 @@
     "lookbook_product": {
       "placeholder_title": "This product isn't in any lookbook",
       "placeholder_body": "Add \"{{ product }}\" to a lookbook in Content → Metaobjects → Lookbooks. Until then, customers see nothing here."
+    }
+  },
+  "collections": {
+    "general": {
+      "no_products": "There are no products in this collection yet."
+    }
+  },
+  "cart": {
+    "general": {
+      "title": "Your cart",
+      "empty": "Your cart is empty.",
+      "continue_shopping": "Continue shopping",
+      "quantity": "Quantity",
+      "subtotal": "Subtotal",
+      "update": "Update cart",
+      "checkout": "Check out"
     }
   }
 }

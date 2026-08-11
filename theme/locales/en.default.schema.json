@@ -90,6 +90,18 @@
     },
     "footer": {
       "name": "Footer"
+    },
+    "main_collection": {
+      "name": "Collection"
+    },
+    "main_cart": {
+      "name": "Cart"
+    },
+    "main_page": {
+      "name": "Page"
+    },
+    "main_404": {
+      "name": "404"
     }
   }
 }

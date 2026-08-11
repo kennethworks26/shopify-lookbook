@@ -229,3 +229,177 @@ a {
   margin: 1rem 0 0;
   list-style: none;
 }
+
+/* Collection, cart, page, 404 --------------------------------------------- */
+
+/*
+ * These pages exist so the storefront has no dead ends: the header's links, the
+ * add-to-cart form, and mistyped URLs all need somewhere real to land. They are
+ * deliberately plain — the lookbook is the feature being demonstrated, and this
+ * is the frame around it.
+ */
+
+.collection,
+.cart,
+.page,
+.not-found {
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 2.5rem var(--space-gutter);
+}
+
+.collection__header {
+  margin-bottom: 2rem;
+}
+
+.collection__title,
+.cart__title,
+.page__title,
+.not-found__title {
+  font-size: 1.75rem;
+}
+
+.collection__description {
+  margin-top: 0.5rem;
+  color: var(--color-muted);
+}
+
+.collection__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2rem 1rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+@media (min-width: 750px) {
+  .collection__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.card-product__link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.card-product__media img,
+.card-product__media-placeholder {
+  aspect-ratio: 3 / 4;
+  width: 100%;
+  object-fit: cover;
+  background: var(--color-line);
+}
+
+.card-product__vendor {
+  margin: 0.75rem 0 0;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-muted);
+}
+
+.card-product__title {
+  margin: 0.25rem 0 0;
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+
+.card-product__price {
+  margin: 0.25rem 0 0;
+  font-size: 0.875rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.card-product__price-sale {
+  color: #b3261e;
+}
+
+.card-product__price s {
+  color: var(--color-muted);
+}
+
+.pagination {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2.5rem;
+}
+
+/* Cart -------------------------------------------------------------------- */
+
+.cart__items {
+  padding: 0;
+  margin: 2rem 0 0;
+  list-style: none;
+}
+
+.cart__item {
+  display: flex;
+  gap: 1rem;
+  padding-block: 1rem;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.cart__item-info a {
+  font-weight: 500;
+}
+
+.cart__item-price {
+  margin: 0.25rem 0 0.5rem;
+  color: var(--color-muted);
+}
+
+.cart__item input {
+  width: 5rem;
+  padding: 0.4rem;
+  border: 1px solid var(--color-line);
+  font: inherit;
+}
+
+.cart__footer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+
+.cart__total {
+  margin-inline-end: auto;
+}
+
+.cart__update,
+.cart__checkout,
+.cart__continue,
+.not-found__link {
+  display: inline-block;
+  padding: 0.75rem 1.25rem;
+  border: 1px solid var(--color-ink);
+  background: transparent;
+  color: var(--color-ink);
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.cart__checkout {
+  background: var(--color-ink);
+  color: #fff;
+}
+
+.cart__empty,
+.collection__empty {
+  color: var(--color-muted);
+}
+
+/* Rich text --------------------------------------------------------------- */
+
+.rte > :first-child {
+  margin-top: 0;
+}
+
+.rte a {
+  color: inherit;
+}
