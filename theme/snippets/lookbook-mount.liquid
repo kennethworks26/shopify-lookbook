@@ -1,0 +1,87 @@
+{%- comment -%}
+  Render one mount node for the React lookbook island.
+
+  Accepts:
+    lookbook - {Object} a `lookbook` metaobject drop
+
+  Both lookbook sections render through this snippet. That is deliberate: the brief
+  requires the product-page section to carry settings identical to the home-page one
+  apart from the lookbook picker, and sharing the markup makes that true by
+  construction rather than by remembering to copy every future change into two files.
+
+  The payload is written as JSON into a data attribute rather than an inline <script>.
+  Inline scripts need a nonce under a strict CSP and are awkward to re-render in the
+  theme editor; a data attribute is just markup, so a section re-render carries its
+  own configuration with it.
+
+  Everything here is server-known. The island is never asked which products are in a
+  lookbook -- it is told, and asks the Storefront API only what those products cost.
+{%- endcomment -%}
+
+{%- liquid
+  assign handles = lookbook.product_handles.value
+-%}
+
+{%- if handles.size > 0 -%}
+  {%- capture description_html -%}{{ lookbook.description }}{%- endcapture -%}
+
+  {%- capture lookbook_payload -%}
+    {
+      "title": {{ lookbook.title.value | json }},
+      "description": {{ description_html | strip | json }},
+      "handles": {{ handles | json }},
+      "shop": {{ shop.permanent_domain | json }},
+      "token": {{ settings.storefront_api_token | json }},
+      "apiVersion": {{ settings.storefront_api_version | json }},
+      {%- comment -%}
+        Market context. `localization.country.iso_code` is the country the shopper is
+        actually browsing in, and is what Shopify resolves market pricing against.
+        This single value is what makes per-market price and compare-at overrides
+        work, so it comes from `localization` and is never hardcoded.
+      {%- endcomment -%}
+      "country": {{ localization.country.iso_code | json }},
+      "language": {{ localization.language.iso_code | json }},
+      {%- comment -%}
+        Locale-aware URL root. On a multi-market store Shopify serves localized paths
+        such as /en-jp/products/..., so a hardcoded "/products/" would drop a shopper
+        out of their locale on every card click.
+      {%- endcomment -%}
+      "rootUrl": {{ routes.root_url | json }},
+      "columnsDesktop": {{ section.settings.columns_desktop | default: 4 | json }},
+      "columnsMobile": {{ section.settings.columns_mobile | default: 2 | json }},
+      "showDescription": {{ section.settings.show_description | json }},
+      "showPrice": {{ section.settings.show_price | json }},
+      "showCompareAt": {{ section.settings.show_compare_at | json }},
+      "showVendor": {{ section.settings.show_vendor | json }},
+      {%- comment -%}
+        Design mode turns merchant-facing diagnostics on. Customers never see them.
+      {%- endcomment -%}
+      "designMode": {{ request.design_mode | json }}
+    }
+  {%- endcapture -%}
+
+  <div class="lookbook-mount" data-lookbook="{{ lookbook_payload | strip | escape }}">
+    {%- comment -%}
+      Fallback for when JavaScript does not run.
+
+      Deliberately no product titles, images, or prices here. The brief requires
+      product data to be fetched at runtime through the Storefront API, so rendering
+      it from Liquid -- even only as a fallback -- would quietly work around the
+      requirement. Product URLs are derivable from the handles we already hold, so a
+      shopper without JavaScript still gets the lookbook's title and a working link
+      per product, and nothing is served that should have come from the API.
+    {%- endcomment -%}
+    <noscript>
+      <h2 class="lookbook-fallback__heading">{{ lookbook.title.value }}</h2>
+      <ul class="lookbook-fallback__list">
+        {%- for handle in handles -%}
+          <li>
+            <a href="{{ routes.root_url }}products/{{ handle }}">
+              {{ handle | replace: '-', ' ' | capitalize }}
+            </a>
+          </li>
+        {%- endfor -%}
+      </ul>
+    </noscript>
+  </div>
+{%- endif -%}

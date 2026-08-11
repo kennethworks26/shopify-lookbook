@@ -1,0 +1,140 @@
+{%- comment -%}
+  Lookbook section for the home page (and any other page the merchant places it on).
+
+  This is the variant where the merchant chooses *which* lookbook to display. Its
+  product-page counterpart, sections/lookbook-product.liquid, resolves lookbooks from
+  the current product instead and has no picker.
+
+  Both render through snippets/lookbook-mount.liquid, so their customization settings
+  stay identical by construction rather than by convention.
+{%- endcomment -%}
+
+{%- liquid
+  assign lookbook = section.settings.lookbook
+-%}
+
+<div
+  class="lookbook-section"
+  style="--lookbook-padding-top: {{ section.settings.padding_top }}px; --lookbook-padding-bottom: {{ section.settings.padding_bottom }}px;"
+>
+  <div class="lookbook-section__inner">
+    {%- if lookbook != blank -%}
+      {%- comment -%}
+        `section` is passed explicitly because `render` isolates scope: unlike the
+        global objects (shop, settings, request, localization), `section` exists only
+        inside section files and would be blank in the snippet otherwise.
+      {%- endcomment -%}
+      {%- render 'lookbook-mount', lookbook: lookbook, section: section -%}
+    {%- elsif request.design_mode -%}
+      {%- comment -%}
+        Merchant-facing guidance, editor only. A section with nothing selected renders
+        nothing at all to customers -- an empty heading above blank space reads as a
+        broken page.
+      {%- endcomment -%}
+      <div class="lookbook-placeholder">
+        <p class="lookbook-placeholder__title">{{ 'sections.lookbook.placeholder_title' | t }}</p>
+        <p class="lookbook-placeholder__body">{{ 'sections.lookbook.placeholder_body' | t }}</p>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.lookbook.name",
+  "tag": "section",
+  "class": "lookbook",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "metaobject",
+      "id": "lookbook",
+      "metaobject_type": "lookbook",
+      "label": "t:sections.lookbook.settings.lookbook.label",
+      "info": "t:sections.lookbook.settings.lookbook.info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.lookbook.settings.header_layout"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4,
+      "label": "t:sections.lookbook.settings.columns_desktop.label"
+    },
+    {
+      "type": "range",
+      "id": "columns_mobile",
+      "min": 1,
+      "max": 2,
+      "step": 1,
+      "default": 2,
+      "label": "t:sections.lookbook.settings.columns_mobile.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.lookbook.settings.header_content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "default": true,
+      "label": "t:sections.lookbook.settings.show_description.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price",
+      "default": true,
+      "label": "t:sections.lookbook.settings.show_price.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_compare_at",
+      "default": true,
+      "label": "t:sections.lookbook.settings.show_compare_at.label",
+      "info": "t:sections.lookbook.settings.show_compare_at.info"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "default": false,
+      "label": "t:sections.lookbook.settings.show_vendor.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.lookbook.settings.header_spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "label": "t:sections.lookbook.settings.padding_top.label"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "label": "t:sections.lookbook.settings.padding_bottom.label"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.lookbook.presets.name"
+    }
+  ]
+}
+{% endschema %}
