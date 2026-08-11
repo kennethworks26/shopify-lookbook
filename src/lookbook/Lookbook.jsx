@@ -36,6 +36,7 @@ export function Lookbook({
   showPrice = true,
   showCompareAt = true,
   showVendor = false,
+  rootUrl = '/',
   designMode = false,
 }) {
   const { status, products, missing, error } = useLookbookProducts({
@@ -108,6 +109,7 @@ export function Lookbook({
                 showVendor={showVendor}
                 showPrice={showPrice}
                 showCompareAt={showCompareAt}
+                rootUrl={rootUrl}
               />
             </li>
           ))}

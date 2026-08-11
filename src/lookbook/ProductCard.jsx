@@ -7,7 +7,7 @@ import { formatMoney, isOnSale, discountPercent } from './lib/money.js';
  * so it is already the correct amount for the shopper's market. Nothing in this
  * component does arithmetic on money beyond computing a display-only discount badge.
  */
-export function ProductCard({ product, showVendor, showPrice, showCompareAt }) {
+export function ProductCard({ product, showVendor, showPrice, showCompareAt, rootUrl = '/' }) {
   const price = product.priceRange?.minVariantPrice;
   const compareAt = product.compareAtPriceRange?.maxVariantPrice;
   const onSale = showCompareAt && isOnSale(price, compareAt);
@@ -15,7 +15,10 @@ export function ProductCard({ product, showVendor, showPrice, showCompareAt }) {
   return (
     <article className="group flex flex-col">
       <a
-        href={`/products/${product.handle}`}
+        // `rootUrl` comes from Liquid's `routes.root_url`. On a multi-market store
+        // Shopify serves localized paths like /en-jp/products/..., so hardcoding
+        // "/products/" would drop a Japanese shopper out of their locale on click.
+        href={`${rootUrl}products/${product.handle}`}
         className="block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lookbook-ink"
       >
         <div className="relative overflow-hidden bg-lookbook-surface">
