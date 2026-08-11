@@ -23,7 +23,12 @@
 -%}
 
 {%- if handles.size > 0 -%}
-  {%- capture description_html -%}{{ lookbook.description }}{%- endcapture -%}
+  {%- comment -%}
+    `metafield_tag` renders a rich text field to HTML. Outputting the field directly
+    yields its raw JSON document instead — which renders as visible braces on the
+    page rather than as a paragraph.
+  {%- endcomment -%}
+  {%- capture description_html -%}{{ lookbook.description | metafield_tag }}{%- endcapture -%}
 
   {%- capture lookbook_payload -%}
     {

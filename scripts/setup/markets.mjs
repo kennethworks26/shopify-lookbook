@@ -29,18 +29,17 @@ const JP = { name: 'Japan', handle: 'japan', countryCode: 'JP', currency: 'JPY' 
  * `[price, compareAtPrice]` — compare-at omitted where the product is not on sale.
  */
 const JPY_PRICES = {
-  'merino-crew-knit': ['24800'],
-  'wool-overcoat': ['78000', '92000'],
-  'pleated-trouser': ['32000'],
-  'oversized-shirt': ['19800'],
-  'silk-slip-dress': ['46000'],
-  'leather-tote': ['64000'],
-  'cashmere-scarf': ['16800', '22000'],
-  'linen-camp-shirt': ['18500'],
-  'wide-leg-jean': ['27800'],
-  'suede-loafer': ['44000'],
-  'ribbed-tank': ['9800'],
-  'quilted-liner-jacket': ['39800', '52000'],
+  'camel-wool-overcoat': ['78000', '92000'],
+  'rust-bomber-jacket': ['39800', '52000'],
+  'tie-neck-silk-blouse': ['23800'],
+  'chambray-shirt': ['18500'],
+  'satin-jogger-trouser': ['32000'],
+  'patched-denim-jean': ['27800'],
+  'silk-evening-gown': ['46000'],
+  'cotton-crew-tee': ['9800'],
+  'graphic-cotton-tee': ['11200'],
+  'structured-leather-bag': ['64000'],
+  'monk-strap-shoe': ['44000', '53000'],
 };
 
 const MARKETS = `

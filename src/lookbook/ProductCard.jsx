@@ -8,6 +8,19 @@ import { formatMoney, isOnSale, discountPercent } from './lib/money.js';
  * component does arithmetic on money beyond computing a display-only discount badge.
  */
 export function ProductCard({ product, showVendor, showPrice, showCompareAt, rootUrl = '/' }) {
+  /*
+   * `availableForSale` is fetched but deliberately not rendered as a badge.
+   *
+   * Under `@inContext(country:)` this store reports false for every product in
+   * every market, while reporting true with no market context and while the Admin
+   * API reports the variant as available. Market-context availability resolves
+   * against a market web presence, which a development store without configured
+   * domains does not have.
+   *
+   * Stock status is not part of this feature's brief, and a "Sold out" badge on
+   * every tile driven by a field that is wrong here would be worse than no badge.
+   * The field stays in the query so the data is there when a real store needs it.
+   */
   const price = product.priceRange?.minVariantPrice;
   const compareAt = product.compareAtPriceRange?.maxVariantPrice;
   const onSale = showCompareAt && isOnSale(price, compareAt);
@@ -44,12 +57,6 @@ export function ProductCard({ product, showVendor, showPrice, showCompareAt, roo
           {onSale && (
             <span className="absolute left-3 top-3 bg-lookbook-sale px-2 py-1 text-xs font-medium tracking-wide text-white">
               {discountPercent(price, compareAt)}% off
-            </span>
-          )}
-
-          {!product.availableForSale && (
-            <span className="absolute left-3 bottom-3 bg-lookbook-ink px-2 py-1 text-xs font-medium tracking-wide text-white">
-              Sold out
             </span>
           )}
         </div>

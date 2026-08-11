@@ -52,128 +52,121 @@ const image = (id) => `${IMAGE_BASE}/${id}?auto=format&fit=crop&w=1400&q=80`;
  */
 const PRODUCTS = [
   {
-    handle: 'merino-crew-knit',
-    title: 'Merino Crew Knit',
-    type: 'Knitwear',
-    price: '229.00',
-    description:
-      'A fine-gauge crew in Australian merino, knitted for weight without bulk. Cut close through the body with a ribbed collar that holds its shape.',
-    imageId: 'photo-1591047139829-d91aecb6caea',
-    alt: 'Model wearing a fine-gauge merino crew neck knit',
-  },
-  {
-    handle: 'wool-overcoat',
-    title: 'Wool Overcoat',
+    handle: 'camel-wool-overcoat',
+    title: 'Camel Wool Overcoat',
     type: 'Outerwear',
     price: '689.00',
     compareAtPrice: '849.00',
     description:
-      'A single-breasted overcoat in a wool-cashmere melton. Fully lined, with a clean shoulder and a length that sits just below the knee.',
+      'A single-breasted overcoat in a wool-cashmere melton. Fully lined, with a clean shoulder and a length that sits below the knee.',
     imageId: 'photo-1539533018447-63fcce2678e3',
-    alt: 'Model wearing a long single-breasted wool overcoat',
-  },
-  {
-    handle: 'pleated-trouser',
-    title: 'Pleated Trouser',
-    type: 'Trousers',
-    price: '279.00',
-    description:
-      'A high-rise trouser with a single forward pleat, tapered through the leg. Cut in a dry wool suiting that holds a crease.',
-    imageId: 'photo-1594633312681-425c7b97ccd1',
-    alt: 'Model wearing high-rise pleated wool trousers',
-  },
-  {
-    handle: 'oversized-shirt',
-    title: 'Oversized Poplin Shirt',
-    type: 'Shirting',
-    price: '189.00',
-    description:
-      'Cotton poplin cut generously through the body and shoulder, with a soft collar and a dropped sleeve.',
-    imageId: 'photo-1521572163474-6864f9cf17ab',
-    alt: 'Model wearing an oversized white poplin shirt',
-  },
-  {
-    handle: 'silk-slip-dress',
-    title: 'Silk Slip Dress',
-    type: 'Dresses',
-    price: '419.00',
-    description:
-      'A bias-cut slip in sandwashed silk, finished with adjustable straps and a low back.',
-    imageId: 'photo-1595777457583-95e059d581b8',
-    alt: 'Model wearing a bias-cut silk slip dress',
-  },
-  {
-    handle: 'leather-tote',
-    title: 'Structured Leather Tote',
-    type: 'Bags',
-    price: '549.00',
-    description:
-      'Vegetable-tanned leather with a structured base and rolled handles. Unlined, so it takes on the shape of what it carries.',
-    imageId: 'photo-1584917865442-de89df76afd3',
-    alt: 'Structured tan leather tote bag',
-  },
-  {
-    handle: 'cashmere-scarf',
-    title: 'Cashmere Scarf',
-    type: 'Accessories',
-    price: '159.00',
-    compareAtPrice: '199.00',
-    description: 'A wide, brushed cashmere scarf with hand-knotted fringing.',
-    imageId: 'photo-1520903920243-00d872a2d1c9',
-    alt: 'Folded brushed cashmere scarf',
-  },
-  {
-    handle: 'linen-camp-shirt',
-    title: 'Linen Camp Shirt',
-    type: 'Shirting',
-    price: '169.00',
-    description: 'Washed linen with an open camp collar and a straight, boxy hem.',
-    imageId: 'photo-1596755094514-f87e34085b2c',
-    alt: 'Model wearing a washed linen camp collar shirt',
-  },
-  {
-    handle: 'wide-leg-jean',
-    title: 'Wide Leg Jean',
-    type: 'Denim',
-    price: '239.00',
-    description: 'Rigid Japanese denim, cut high and full through the leg with a raw hem.',
-    imageId: 'photo-1541099649105-f69ad21f3246',
-    alt: 'Model wearing high-rise wide leg jeans',
-  },
-  {
-    handle: 'suede-loafer',
-    title: 'Suede Loafer',
-    type: 'Footwear',
-    price: '389.00',
-    description: 'An unlined suede loafer on a leather sole, with a softly rounded apron.',
-    imageId: 'photo-1533867617858-e7b97e060509',
-    alt: 'Pair of suede loafers',
-  },
-  {
-    handle: 'ribbed-tank',
-    title: 'Ribbed Cotton Tank',
-    type: 'Jersey',
-    price: '89.00',
-    description: 'A fine-ribbed cotton tank with a scooped neck, cut to sit close.',
-    imageId: 'photo-1618354691373-d851c5c3a990',
-    alt: 'Model wearing a fine-ribbed cotton tank top',
+    alt: 'Model wearing a long camel wool overcoat',
   },
   {
     /*
-     * The anchor of the whole demo. This product is deliberately placed in all
-     * three lookbooks by setup:lookbooks, so its product page is the live proof
-     * that the max-two rule works: it must render Autumn Layers and Weekend Edit,
-     * never Monochrome Study.
+     * The anchor of the whole demo. setup:lookbooks places this product in all
+     * three lookbooks, so its product page is the live proof that the max-two rule
+     * works: it must render Autumn Layers and Weekend Edit, never Monochrome Study.
      */
-    handle: 'quilted-liner-jacket',
-    title: 'Quilted Liner Jacket',
+    handle: 'rust-bomber-jacket',
+    title: 'Rust Bomber Jacket',
     type: 'Outerwear',
     price: '349.00',
     compareAtPrice: '429.00',
     description:
-      'A lightweight quilted liner that works alone or under a coat. Snap front, ribbed cuffs, and a collarless neck so it layers flat.',
+      'A lightweight bomber in a dry technical shell. Ribbed collar and cuffs, with a sleeve pocket and a body cut close enough to layer under a coat.',
+    imageId: 'photo-1591047139829-d91aecb6caea',
+    alt: 'Rust-coloured bomber jacket on a hanger',
+  },
+  {
+    handle: 'tie-neck-silk-blouse',
+    title: 'Tie-Neck Silk Blouse',
+    type: 'Shirting',
+    price: '219.00',
+    description:
+      'Sandwashed silk with a narrow tie at the throat and a softly bloused sleeve. Cut long enough to tuck.',
     imageId: 'photo-1608234807905-4466023792f5',
-    alt: 'Model wearing a lightweight quilted liner jacket',
+    alt: 'Model wearing a white silk blouse with a tie neck',
+  },
+  {
+    handle: 'chambray-shirt',
+    title: 'Chambray Shirt',
+    type: 'Shirting',
+    price: '169.00',
+    description:
+      'Washed cotton chambray with a scattered dot print, a soft collar, and a straight hem.',
+    imageId: 'photo-1596755094514-f87e34085b2c',
+    alt: 'Chambray shirt with a dot print, on a hanger',
+  },
+  {
+    handle: 'satin-jogger-trouser',
+    title: 'Satin Jogger Trouser',
+    type: 'Trousers',
+    price: '279.00',
+    description:
+      'A high-rise trouser in fluid satin, gathered at the waist and cuffed at the ankle. Deep patch pockets at the hip.',
+    imageId: 'photo-1594633312681-425c7b97ccd1',
+    alt: 'Model wearing blush satin jogger trousers',
+  },
+  {
+    handle: 'patched-denim-jean',
+    title: 'Patched Denim Jean',
+    type: 'Denim',
+    price: '239.00',
+    description:
+      'Rigid indigo denim, tapered through the leg, finished with hand-applied patches and a raw hem.',
+    imageId: 'photo-1541099649105-f69ad21f3246',
+    alt: 'Model wearing patched and distressed indigo jeans',
+  },
+  {
+    handle: 'silk-evening-gown',
+    title: 'Silk Evening Gown',
+    type: 'Dresses',
+    price: '419.00',
+    description:
+      'A full-skirted gown in weighted silk faille, with a high neck and a clean, unadorned bodice.',
+    imageId: 'photo-1595777457583-95e059d581b8',
+    alt: 'Model wearing a red silk evening gown',
+  },
+  {
+    handle: 'cotton-crew-tee',
+    title: 'Cotton Crew Tee',
+    type: 'Jersey',
+    price: '89.00',
+    description:
+      'Heavyweight combed cotton with a ribbed crew neck, cut straight through the body.',
+    imageId: 'photo-1521572163474-6864f9cf17ab',
+    alt: 'Model wearing a plain white cotton crew neck t-shirt',
+  },
+  {
+    handle: 'graphic-cotton-tee',
+    title: 'Graphic Cotton Tee',
+    type: 'Jersey',
+    price: '99.00',
+    description: 'Garment-dyed black cotton with a small chest print, washed soft before it ships.',
+    imageId: 'photo-1618354691373-d851c5c3a990',
+    alt: 'Black cotton t-shirt with a small chest graphic, on a hanger',
+  },
+  {
+    handle: 'structured-leather-bag',
+    title: 'Structured Leather Bag',
+    type: 'Bags',
+    price: '549.00',
+    description:
+      'A boxy top-handle bag in polished calf leather, with a turn-lock closure and a detachable strap.',
+    imageId: 'photo-1584917865442-de89df76afd3',
+    alt: 'Structured coral leather top-handle bag',
+  },
+  {
+    handle: 'monk-strap-shoe',
+    title: 'Monk Strap Shoe',
+    type: 'Footwear',
+    price: '389.00',
+    compareAtPrice: '459.00',
+    description:
+      'A double monk strap in burnished calf, on a leather sole with a softly rounded toe.',
+    imageId: 'photo-1533867617858-e7b97e060509',
+    alt: 'Pair of brown double monk strap shoes',
   },
 ];
 
@@ -207,6 +200,16 @@ const VARIANTS_UPDATE = `
       productVariants { id price compareAtPrice }
       userErrors { field message }
     }
+  }
+`;
+
+const DEMO_PRODUCTS = `
+  query DemoProducts { products(first: 100, query: "tag:lookbook-demo") { nodes { id handle } } }
+`;
+
+const PRODUCT_DELETE = `
+  mutation DeleteProduct($input: ProductDeleteInput!) {
+    productDelete(input: $input) { deletedProductId userErrors { field message } }
   }
 `;
 
@@ -302,6 +305,18 @@ async function main() {
             // Explicit null clears a stale compare-at on re-runs, so the script
             // converges on the declared state rather than only adding to it.
             compareAtPrice: product.compareAtPrice ?? null,
+            /*
+             * Inventory is not tracked on this demo store. Without both of these
+             * every variant sits at zero stock, `availableForSale` comes back false,
+             * and the entire lookbook renders as "Sold out" — technically correct
+             * and completely useless as a demonstration.
+             *
+             * Both are needed: `tracked: false` stops Shopify counting stock, and
+             * CONTINUE stops it refusing a sale at zero quantity. Setting only the
+             * first still leaves availableForSale false.
+             */
+            inventoryItem: { tracked: false },
+            inventoryPolicy: 'CONTINUE',
           },
         ],
       });
@@ -317,6 +332,25 @@ async function main() {
     // Media ingestion is asynchronous and the API is rate limited; a short pause
     // keeps a 12-product seed comfortably inside the leaky bucket.
     await sleep(250);
+  }
+
+  /*
+   * Retire demo products that are no longer declared above.
+   *
+   * Scoped strictly to the `lookbook-demo` tag this script applies, so it can only
+   * ever remove products it created itself. Without this, renaming a product leaves
+   * the old one behind: still published, still in search, and still visible to a
+   * reviewer browsing the catalog.
+   */
+  const declared = new Set(PRODUCTS.map((product) => product.handle));
+  const stale = (await query(DEMO_PRODUCTS)).products.nodes.filter(
+    (node) => !declared.has(node.handle)
+  );
+
+  for (const product of stale) {
+    const result = await query(PRODUCT_DELETE, { input: { id: product.id } });
+    assertNoUserErrors(result.productDelete, `productDelete ${product.handle}`);
+    log.info(`removed ${product.handle} — no longer in the catalog`);
   }
 
   log.info(`Vendor: ${VENDOR}`);

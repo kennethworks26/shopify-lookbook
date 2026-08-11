@@ -105,9 +105,12 @@ describe('ProductCard', () => {
     expect(screen.queryByText('Atelier')).not.toBeInTheDocument();
   });
 
-  it('marks sold-out products', () => {
+  it('does not render a sold-out badge', () => {
+    // availableForSale is unreliable under @inContext on a store whose markets have
+    // no web presence: it reports false for everything. See ProductCard.jsx.
     render(<ProductCard product={makeProduct({ availableForSale: false })} {...defaults} />);
-    expect(screen.getByText('Sold out')).toBeInTheDocument();
+    expect(screen.queryByText('Sold out')).not.toBeInTheDocument();
+    expect(screen.getByText('Merino Crew Knit')).toBeInTheDocument();
   });
 
   it('renders JPY market pricing exactly as the API returned it', () => {

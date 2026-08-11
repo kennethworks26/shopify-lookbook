@@ -20,6 +20,13 @@ blob-report/
 # Local working notes — planning scratch, not part of the deliverable
 tasks/
 
+# Theme settings are store-specific: they hold the Storefront API token and the
+# merchant's chosen values for a particular store. The token is public by design
+# (see .env.example), but pinning one store's settings into the repo means anyone
+# pushing this theme elsewhere silently ships a token pointing at someone else's
+# shop. docs/runbooks/store-setup.md covers setting it per store instead.
+theme/config/settings_data.json
+
 # OS / editor
 .DS_Store
 Thumbs.db

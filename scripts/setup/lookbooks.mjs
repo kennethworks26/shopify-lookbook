@@ -21,7 +21,7 @@ import { createClient, assertNoUserErrors, log, fail } from './lib/admin.mjs';
 const TYPE = 'lookbook';
 
 /** The product deliberately present in every lookbook. */
-const ANCHOR = 'quilted-liner-jacket';
+const ANCHOR = 'rust-bomber-jacket';
 
 const LOOKBOOKS = [
   {
@@ -31,11 +31,11 @@ const LOOKBOOKS = [
     description:
       'Transitional weight, worn together. Pieces that hold their shape under a coat and still read on their own.',
     productHandles: [
-      'wool-overcoat',
-      'merino-crew-knit',
+      'camel-wool-overcoat',
       ANCHOR,
-      'pleated-trouser',
-      'cashmere-scarf',
+      'tie-neck-silk-blouse',
+      'satin-jogger-trouser',
+      'monk-strap-shoe',
     ],
   },
   {
@@ -43,7 +43,7 @@ const LOOKBOOKS = [
     title: 'Weekend Edit',
     priority: 20,
     description: 'Looser cuts and softer finishes, for the days that ask less of you.',
-    productHandles: ['linen-camp-shirt', 'wide-leg-jean', ANCHOR, 'suede-loafer'],
+    productHandles: ['chambray-shirt', 'patched-denim-jean', ANCHOR, 'cotton-crew-tee'],
   },
   {
     handle: 'monochrome-study',
@@ -51,7 +51,7 @@ const LOOKBOOKS = [
     priority: 30,
     description:
       'One palette, worked across weights and textures. The lowest priority of the three — which is why it never appears on a product page alongside the other two.',
-    productHandles: ['ribbed-tank', 'silk-slip-dress', 'leather-tote', ANCHOR],
+    productHandles: ['graphic-cotton-tee', 'silk-evening-gown', 'structured-leather-bag', ANCHOR],
   },
 ];
 
