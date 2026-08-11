@@ -226,6 +226,5 @@ store.
 - [ADR-0003 — Liquid selects, React fetches](docs/adr/0003-liquid-selects-react-fetches.md)
 - [ADR-0004 — Tailwind without Preflight](docs/adr/0004-tailwind-without-preflight.md)
 
-Full specification: [`docs/spec.md`](docs/spec.md).
 Store setup from zero: [`docs/runbooks/store-setup.md`](docs/runbooks/store-setup.md).
 For merchandisers: [`docs/client-training/managing-lookbooks.md`](docs/client-training/managing-lookbooks.md).

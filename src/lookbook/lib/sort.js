@@ -15,7 +15,7 @@
  * stops resolving when a product is unpublished, deleted, or renamed — all normal
  * merchandising events. The shopper should see a shorter lookbook, not a broken tile.
  * The theme editor surfaces the dead handles so the merchant can fix them; see
- * docs/spec.md §5.6.
+ * the README, under "Failure behaviour is deliberate".
  *
  * @param {Array<{handle: string}>} products  results from the Storefront API
  * @param {string[]} handles                  handles in merchandiser order

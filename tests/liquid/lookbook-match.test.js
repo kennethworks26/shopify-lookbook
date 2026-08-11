@@ -73,7 +73,7 @@ function selected(output) {
   return [...output.matchAll(/\[([^\]]+)\]/g)].map((match) => match[1]);
 }
 
-// The seeded fixture from docs/spec.md §10: one product deliberately in all three.
+// Mirrors the seeded data in scripts/setup/lookbooks.mjs: one product in all three.
 const SHARED = 'limited-anorak';
 
 const FIXTURE = [

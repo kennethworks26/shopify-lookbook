@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Lookbook feature for Shopify Online Store 2.0 — metaobjects, Storefront API, React 19 island. See docs/spec.md.",
+  "description": "Lookbook feature for Shopify Online Store 2.0 — metaobjects, Storefront API, React 19 island.",
   "engines": {
     "node": ">=20.11"
   },

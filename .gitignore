@@ -19,6 +19,7 @@ blob-report/
 
 # Local working notes — planning scratch, not part of the deliverable
 tasks/
+docs/spec.md
 
 # Theme settings are store-specific: they hold the Storefront API token and the
 # merchant's chosen values for a particular store. The token is public by design

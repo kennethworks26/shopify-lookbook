@@ -10,7 +10,7 @@ import './styles.css';
  * hydrates each one independently — a page can hold several lookbooks (two on a
  * product page, per the max-2 rule) and one failing must not take the others down.
  *
- * See docs/spec.md §5.1 for why the Liquid/React split falls here.
+ * See docs/adr/0003-liquid-selects-react-fetches.md for why the split falls here.
  */
 
 const MOUNT_SELECTOR = '[data-lookbook]';
