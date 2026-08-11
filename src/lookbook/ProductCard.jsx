@@ -32,7 +32,10 @@ export function ProductCard({ product, showVendor, showPrice, showCompareAt, roo
         // Shopify serves localized paths like /en-jp/products/..., so hardcoding
         // "/products/" would drop a Japanese shopper out of their locale on click.
         href={`${rootUrl}products/${product.handle}`}
-        className="block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lookbook-ink"
+        // `no-underline` for the same reason as `list-none` on the grid: without
+        // Preflight, the browser's default underline stays. The focus ring is the
+        // affordance that matters for keyboard users and is kept.
+        className="block no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lookbook-ink"
       >
         <div className="relative overflow-hidden bg-lookbook-surface">
           {product.featuredImage ? (

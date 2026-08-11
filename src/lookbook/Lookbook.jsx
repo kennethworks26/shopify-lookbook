@@ -63,7 +63,13 @@ export function Lookbook({
   }
 
   const gridClasses = [
-    'grid gap-x-4 gap-y-8',
+    /*
+     * `list-none` is not decoration. Preflight is deliberately not imported (see
+     * docs/adr/0004-tailwind-without-preflight.md), so a <ul> keeps the browser's
+     * default discs and indent. Anything Preflight would normally have reset has
+     * to be asked for explicitly here.
+     */
+    'grid list-none gap-x-4 gap-y-8 p-0 m-0',
     MOBILE_COLUMNS[columnsMobile] ?? MOBILE_COLUMNS[2],
     DESKTOP_COLUMNS[columnsDesktop] ?? DESKTOP_COLUMNS[4],
   ].join(' ');

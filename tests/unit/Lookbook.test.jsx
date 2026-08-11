@@ -128,6 +128,17 @@ describe('Lookbook', () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 
+  it('renders the grid without list markers', async () => {
+    // Same reason as the link underline: no Preflight, so the <ul> keeps the
+    // browser's discs and indent unless asked not to.
+    fetch.mockResolvedValue(resolveWith([productNode('a-knit', 'Knit')]));
+
+    const { container } = render(<Lookbook {...config} />);
+    await waitFor(() => expect(screen.getByText('Knit')).toBeInTheDocument());
+
+    expect(container.querySelector('ul').className).toContain('list-none');
+  });
+
   it('uses static column classes so Tailwind does not purge them', async () => {
     // A template literal like `grid-cols-${n}` builds classes Tailwind never sees at
     // build time; they get stripped and the grid collapses in production only.

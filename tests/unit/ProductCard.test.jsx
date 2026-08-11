@@ -24,6 +24,13 @@ function makeProduct(overrides = {}) {
 const defaults = { showVendor: true, showPrice: true, showCompareAt: true };
 
 describe('ProductCard', () => {
+  it('renders the link without a browser-default underline', () => {
+    // Preflight is not imported, so nothing resets this for us. Regression guard:
+    // this shipped with underlined product links once already.
+    render(<ProductCard product={makeProduct()} {...defaults} />);
+    expect(screen.getByRole('link').className).toContain('no-underline');
+  });
+
   it('links to the product page', () => {
     render(<ProductCard product={makeProduct()} {...defaults} />);
     expect(screen.getByRole('link')).toHaveAttribute('href', '/products/merino-crew-knit');
