@@ -403,3 +403,38 @@ a {
 .rte a {
   color: inherit;
 }
+
+/* Lookbook header --------------------------------------------------------- */
+
+/*
+ * Rendered by Liquid, not React — see snippets/lookbook-mount.liquid. It paints
+ * with the document, so it is styled here in the unbundled stylesheet rather
+ * than with Tailwind in the island.
+ */
+
+.lookbook-header {
+  max-width: 42rem;
+  margin-bottom: 2rem;
+}
+
+.lookbook-header__image {
+  display: block;
+  width: 100%;
+  max-width: none;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  margin-bottom: 1.5rem;
+}
+
+.lookbook-header__title {
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+}
+
+.lookbook-header__description {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.625;
+  color: var(--color-muted);
+}

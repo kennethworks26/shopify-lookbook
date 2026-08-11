@@ -23,7 +23,6 @@ const MOBILE_COLUMNS = {
 
 export function Lookbook({
   title,
-  description,
   handles,
   shop,
   token,
@@ -32,7 +31,6 @@ export function Lookbook({
   language,
   columnsDesktop = 4,
   columnsMobile = 2,
-  showDescription = true,
   showPrice = true,
   showCompareAt = true,
   showVendor = false,
@@ -71,25 +69,13 @@ export function Lookbook({
   ].join(' ');
 
   return (
+    /*
+     * No heading here. Title, description, and cover image are server-known, so
+     * Liquid renders them in snippets/lookbook-mount.liquid where they paint with
+     * the document rather than waiting on hydration. This component owns only the
+     * grid — the part that genuinely has to wait for the Storefront API.
+     */
     <section className="lookbook-root font-display" aria-busy={status === 'loading'}>
-      <header className="mb-8 max-w-2xl">
-        {title && (
-          <h2 className="text-2xl font-medium tracking-tight text-lookbook-ink">{title}</h2>
-        )}
-        {showDescription && description && (
-          <div
-            className="mt-2 text-sm leading-relaxed text-lookbook-muted [&_a]:underline"
-            /*
-             * `description` is a rich_text_field rendered to HTML by Liquid before it
-             * reaches the browser. The content is merchant-authored and same-origin —
-             * the same trust level as any other theme content — and Shopify sanitises
-             * rich text on the way in.
-             */
-            dangerouslySetInnerHTML={{ __html: description }}
-          />
-        )}
-      </header>
-
       {status === 'loading' ? (
         <div className={gridClasses}>
           {handles.slice(0, columnsDesktop).map((handle) => (

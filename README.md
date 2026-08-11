@@ -76,7 +76,8 @@ in them_.**
 │  home page     -> the one the merchant selected                      │
 │  product page  -> those whose product_handles include product.handle │
 │                   sorted by priority, capped at 2                    │
-│  emits  <div data-lookbook="{ title, description, handles[], … }">   │
+│  renders the header: cover image, title, description                 │
+│  emits  <div data-lookbook="{ handles[], market, settings, … }">     │
 └──────────────────────────┬───────────────────────────────────────────┘
                            │  JSON in a data attribute
 ┌──────────────────────────▼─ React 19 island (browser) ──────────────┐
@@ -85,6 +86,10 @@ in them_.**
 │  formats money with Intl.NumberFormat — never converts               │
 └──────────────────────────────────────────────────────────────────────┘
 ```
+
+The header — cover image, title, description — is server-known, so Liquid renders it into
+the HTML where it paints with the document. React owns only the grid, which is the part
+that genuinely has to wait for data.
 
 Matching a product to its lookbooks is a **content** question the server can answer for
 free from data already in the page render — no API round trip, no layout shift. Doing it
@@ -156,7 +161,7 @@ none: `¥19,800`, not `¥19,800.00`.
 ```
 src/lookbook/            React island — the only code that gets bundled
   index.jsx                mount: finds [data-lookbook] nodes, hydrates each
-  Lookbook.jsx             layout, heading, loading / empty / error states
+  Lookbook.jsx             the product grid, and its loading / empty / error states
   ProductCard.jsx          image, vendor, title, price, compare-at
   useLookbookProducts.js   fetch lifecycle, abort on unmount
   styles.css               Tailwind entry: layers, @theme tokens, @source globs
@@ -182,7 +187,7 @@ docs/adr/                architecture decision records
 
 ## Testing
 
-85 tests. Coverage thresholds are enforced in CI at 80% of `src/`.
+97 tests. Coverage thresholds are enforced in CI at 80% of `src/`.
 
 | Level     | What it covers                                                                                                                                                                |
 | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

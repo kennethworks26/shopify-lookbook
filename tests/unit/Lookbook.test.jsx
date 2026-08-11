@@ -4,7 +4,6 @@ import { Lookbook } from '../../src/lookbook/Lookbook.jsx';
 
 const config = {
   title: 'Autumn Layers',
-  description: '<p>Transitional weight, worn together.</p>',
   handles: ['a-knit', 'b-belt'],
   shop: 'example.myshopify.com',
   token: 'public-token',
@@ -45,14 +44,15 @@ afterEach(() => {
 });
 
 describe('Lookbook', () => {
-  it('shows the heading and description immediately, before products arrive', async () => {
+  it('renders no heading — Liquid owns the header', async () => {
+    // Title, description, and cover image are server-known, so they are rendered in
+    // snippets/lookbook-mount.liquid and paint with the document. This component
+    // owns only the grid. tests/liquid/lookbook-mount.test.js covers the header.
     fetch.mockResolvedValue(resolveWith([productNode('a-knit', 'Knit')]));
 
     render(<Lookbook {...config} />);
 
-    // The heading is server-known, so it must not wait on the network.
-    expect(screen.getByRole('heading', { name: 'Autumn Layers' })).toBeInTheDocument();
-    expect(screen.getByText('Transitional weight, worn together.')).toBeInTheDocument();
+    expect(screen.queryByRole('heading')).not.toBeInTheDocument();
 
     await waitFor(() => expect(screen.getByText('Knit')).toBeInTheDocument());
   });
@@ -126,15 +126,6 @@ describe('Lookbook', () => {
 
     await waitFor(() => expect(screen.getByText(/Storefront API token/i)).toBeInTheDocument());
     expect(fetch).not.toHaveBeenCalled();
-  });
-
-  it('omits the description when the merchant turns it off', async () => {
-    fetch.mockResolvedValue(resolveWith([productNode('a-knit', 'Knit')]));
-
-    render(<Lookbook {...config} showDescription={false} />);
-
-    expect(screen.queryByText('Transitional weight, worn together.')).not.toBeInTheDocument();
-    await waitFor(() => expect(screen.getByText('Knit')).toBeInTheDocument());
   });
 
   it('uses static column classes so Tailwind does not purge them', async () => {

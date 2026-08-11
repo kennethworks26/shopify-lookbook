@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Lookbook feature for Shopify Online Store 2.0 — metaobjects, Storefront API, React 19 island.",
+  "description": "Lookbook feature for Shopify Online Store 2.0 \u2014 metaobjects, Storefront API, React 19 island.",
   "engines": {
     "node": ">=20.11"
   },
@@ -17,7 +17,7 @@
     "lint": "eslint . && npm run theme:check",
     "lint:fix": "eslint . --fix",
     "theme:check": "shopify theme check --path theme --fail-level warning",
-    "theme:push": "shopify theme push --path theme --unpublished",
+    "theme:push": "shopify theme push --path theme --unpublished --theme Lookbook",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "verify:bundle": "node scripts/verify-bundle.mjs",

@@ -33,7 +33,6 @@
   {%- capture lookbook_payload -%}
     {
       "title": {{ lookbook.title.value | json }},
-      "description": {{ description_html | strip | json }},
       "handles": {{ handles | json }},
       "shop": {{ shop.permanent_domain | json }},
       "token": {{ settings.storefront_api_token | json }},
@@ -71,6 +70,43 @@
       "designMode": {{ request.design_mode | json }}
     }
   {%- endcapture -%}
+
+  {%- comment -%}
+    The header is rendered here, by Liquid, rather than by React.
+
+    Title, description, and cover image are all server-known — they come from the
+    metaobject, not from the Storefront API. Rendering them in the HTML means they
+    paint with the document instead of waiting on hydration and a network round
+    trip, and the cover image gets to be the LCP element with its dimensions
+    already reserved.
+
+    React owns only the product grid below, which is the part that genuinely has
+    to wait for data.
+  {%- endcomment -%}
+  <header class="lookbook-header">
+    {%- if lookbook.cover_image != blank -%}
+      {%- assign cover = lookbook.cover_image.value -%}
+      {%- if cover.width -%}
+        <img
+          class="lookbook-header__image"
+          src="{{ cover | image_url: width: 1600 }}"
+          alt="{{ cover.alt | default: lookbook.title.value | escape }}"
+          width="{{ cover.width }}"
+          height="{{ cover.height }}"
+          loading="eager"
+          fetchpriority="high"
+        >
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- if lookbook.title.value != blank -%}
+      <h2 class="lookbook-header__title">{{ lookbook.title.value }}</h2>
+    {%- endif -%}
+
+    {%- if section.settings.show_description and description_html != blank -%}
+      <div class="lookbook-header__description rte">{{ description_html }}</div>
+    {%- endif -%}
+  </header>
 
   <div class="lookbook-mount" data-lookbook="{{ lookbook_payload | strip | escape }}">
     {%- comment -%}
