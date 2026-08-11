@@ -1,58 +1,57 @@
 /**
- * The GraphQL document and query-string construction for lookbook product fetches.
+ * GraphQL document construction for lookbook product fetches.
+ *
+ * Products are looked up by exact handle, one GraphQL alias each, rather than
+ * through `products(query: "handle:a OR handle:b")`.
+ *
+ * That search-based approach looks tidier and does not work. On the Storefront API
+ * `products(query:)` is a full-text search, not an exact field match, so some
+ * handles resolve and others silently do not — verified against a real store, where
+ * a five-handle lookbook returned three products with a perfectly valid 200
+ * response and no error. Aliased `product(handle:)` lookups are exact, return
+ * results in the order asked for, and cost one point each.
  */
 
 /**
- * Shopify product handles are lowercase alphanumeric with hyphens. Anything else is
- * rejected before it reaches the search-query string.
+ * Shopify product handles are lowercase alphanumeric with hyphens.
  *
- * This matters because `products(query:)` takes a *search string*, not a typed
- * variable list, so handles are concatenated into it. An unvalidated handle
- * containing `"` could close the term and append arbitrary search syntax. The
- * Storefront API is a read-only, public-scoped surface so the blast radius is small,
- * but "small blast radius" is not a reason to build the injection in.
+ * Handles are interpolated into the query document, so they are validated first.
+ * `JSON.stringify` escapes the value as well, which makes this belt and braces —
+ * but a rejected handle also fails loudly in tests, which a silently escaped one
+ * would not.
  */
 const HANDLE_PATTERN = /^[a-z0-9][a-z0-9-]*$/;
 
 /**
- * Shopify caps `first:` at 250, but a search string also has a practical length
- * limit. 25 handles per request keeps the URL comfortable and matches the largest
- * lookbook we seed, so the chunking path is exercised rather than theoretical.
+ * Aliases per request. Each `product(handle:)` costs one point against the
+ * Storefront API's cost limit, so this is comfortable, and it keeps the document
+ * small enough to stay readable in a network trace.
  */
 export const HANDLES_PER_REQUEST = 25;
 
-export const LOOKBOOK_PRODUCTS_QUERY = /* GraphQL */ `
-  query LookbookProducts(
-    $query: String!
-    $first: Int!
-    $country: CountryCode!
-    $language: LanguageCode!
-  ) @inContext(country: $country, language: $language) {
-    products(first: $first, query: $query) {
-      nodes {
-        id
-        handle
-        title
-        vendor
-        availableForSale
-        featuredImage {
-          url
-          altText
-          width
-          height
-        }
-        priceRange {
-          minVariantPrice {
-            amount
-            currencyCode
-          }
-        }
-        compareAtPriceRange {
-          maxVariantPrice {
-            amount
-            currencyCode
-          }
-        }
+const PRODUCT_FIELDS = `
+  fragment LookbookProduct on Product {
+    id
+    handle
+    title
+    vendor
+    availableForSale
+    featuredImage {
+      url
+      altText
+      width
+      height
+    }
+    priceRange {
+      minVariantPrice {
+        amount
+        currencyCode
+      }
+    }
+    compareAtPriceRange {
+      maxVariantPrice {
+        amount
+        currencyCode
       }
     }
   }
@@ -67,12 +66,10 @@ export const LOOKBOOK_PRODUCTS_QUERY = /* GraphQL */ `
 export function validHandles(handles) {
   if (!Array.isArray(handles)) return [];
 
-  return handles.filter((handle) => typeof handle === 'string' && HANDLE_PATTERN.test(handle));
+  return handles.filter(isValidHandle);
 }
 
 /**
- * Whether a single handle is safe.
- *
  * @param {unknown} handle
  * @returns {boolean}
  */
@@ -81,13 +78,42 @@ export function isValidHandle(handle) {
 }
 
 /**
- * Build the `query:` argument for a batch of handles.
+ * Build a query fetching one product per handle, aliased `p0`, `p1`, ….
+ *
+ * `@inContext(country:)` is what makes market pricing work: Shopify resolves the
+ * market's price-list overrides server-side, so the amounts that come back are
+ * already correct for the shopper's market and need no conversion.
  *
  * @param {string[]} handles  already validated
- * @returns {string}          e.g. `handle:merino-crew-knit OR handle:canvas-weekender`
+ * @returns {string}
  */
-export function buildHandleQuery(handles) {
-  return handles.map((handle) => `handle:${handle}`).join(' OR ');
+export function buildLookbookQuery(handles) {
+  const aliases = handles
+    .map(
+      (handle, index) =>
+        `  p${index}: product(handle: ${JSON.stringify(handle)}) { ...LookbookProduct }`
+    )
+    .join('\n');
+
+  return `query LookbookProducts($country: CountryCode!, $language: LanguageCode!)
+@inContext(country: $country, language: $language) {
+${aliases}
+}
+${PRODUCT_FIELDS}`;
+}
+
+/**
+ * Read an aliased response back into an array, in the order the handles were asked
+ * for. Handles that did not resolve come back as null and are dropped.
+ *
+ * @param {object} data       the GraphQL `data` payload
+ * @param {string[]} handles  the handles this batch requested
+ * @returns {object[]}
+ */
+export function readAliasedProducts(data, handles) {
+  if (!data) return [];
+
+  return handles.map((_, index) => data[`p${index}`]).filter(Boolean);
 }
 
 /**

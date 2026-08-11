@@ -2,10 +2,10 @@ import { describe, it, expect } from 'vitest';
 import {
   validHandles,
   isValidHandle,
-  buildHandleQuery,
+  buildLookbookQuery,
+  readAliasedProducts,
   chunkHandles,
   HANDLES_PER_REQUEST,
-  LOOKBOOK_PRODUCTS_QUERY,
 } from '../../src/lookbook/api/query.js';
 
 describe('handle validation', () => {
@@ -15,11 +15,12 @@ describe('handle validation', () => {
     expect(isValidHandle('4-panel-cap')).toBe(true);
   });
 
-  it('rejects an attempt to break out of the search term', () => {
-    // The reason this guard exists: handles are concatenated into the `query:`
-    // search string, so a quote could close the term and append arbitrary syntax.
-    expect(isValidHandle('foo" OR handle:"secret-product')).toBe(false);
-    expect(isValidHandle('foo OR handle:bar')).toBe(false);
+  it('rejects an attempt to inject GraphQL syntax', () => {
+    // Handles are interpolated into the query document, so a value carrying quotes
+    // or braces must never reach it.
+    expect(isValidHandle('foo") { id } x: product(handle: "bar')).toBe(false);
+    expect(isValidHandle('foo"bar')).toBe(false);
+    expect(isValidHandle('{malicious}')).toBe(false);
   });
 
   it('rejects uppercase, spaces, and leading hyphens', () => {
@@ -35,7 +36,12 @@ describe('handle validation', () => {
   });
 
   it('filters a mixed list down to the safe handles', () => {
-    const input = ['good-handle', 'bad handle', 'also-good', 'worse" OR handle:"x'];
+    const input = [
+      'good-handle',
+      'bad handle',
+      'also-good',
+      'worse") { id } y: product(handle: "x',
+    ];
     expect(validHandles(input)).toEqual(['good-handle', 'also-good']);
   });
 
@@ -44,13 +50,59 @@ describe('handle validation', () => {
   });
 });
 
-describe('buildHandleQuery', () => {
-  it('joins handles with OR', () => {
-    expect(buildHandleQuery(['a-shirt', 'b-coat'])).toBe('handle:a-shirt OR handle:b-coat');
+describe('buildLookbookQuery', () => {
+  it('looks each handle up exactly, one alias per handle', () => {
+    // This is the whole reason the module exists. products(query:) is a full-text
+    // search on the Storefront API, not an exact match, and silently returns only
+    // some of the requested handles.
+    const query = buildLookbookQuery(['a-shirt', 'b-coat']);
+
+    expect(query).toContain('p0: product(handle: "a-shirt")');
+    expect(query).toContain('p1: product(handle: "b-coat")');
+    expect(query).not.toContain('products(');
   });
 
-  it('handles a single entry without a trailing operator', () => {
-    expect(buildHandleQuery(['solo'])).toBe('handle:solo');
+  it('requests market context, which is what makes per-market pricing work', () => {
+    const query = buildLookbookQuery(['a-shirt']);
+    expect(query).toContain('@inContext(country: $country, language: $language)');
+  });
+
+  it('asks for compare-at price, required for market compare-at overrides', () => {
+    expect(buildLookbookQuery(['a-shirt'])).toContain('compareAtPriceRange');
+  });
+
+  it('asks for image dimensions, which prevent layout shift', () => {
+    const query = buildLookbookQuery(['a-shirt']);
+    expect(query).toContain('width');
+    expect(query).toContain('height');
+  });
+
+  it('quotes handles so the document cannot be broken by the value', () => {
+    expect(buildLookbookQuery(['a-shirt'])).toContain('"a-shirt"');
+  });
+});
+
+describe('readAliasedProducts', () => {
+  it('reads aliases back in the order the handles were requested', () => {
+    const data = {
+      p0: { handle: 'a-shirt' },
+      p1: { handle: 'b-coat' },
+      p2: { handle: 'c-belt' },
+    };
+
+    const products = readAliasedProducts(data, ['a-shirt', 'b-coat', 'c-belt']);
+    expect(products.map((p) => p.handle)).toEqual(['a-shirt', 'b-coat', 'c-belt']);
+  });
+
+  it('drops handles that resolved to null rather than leaving a gap', () => {
+    const data = { p0: { handle: 'a-shirt' }, p1: null, p2: { handle: 'c-belt' } };
+
+    const products = readAliasedProducts(data, ['a-shirt', 'deleted', 'c-belt']);
+    expect(products.map((p) => p.handle)).toEqual(['a-shirt', 'c-belt']);
+  });
+
+  it('returns an empty array when there is no data', () => {
+    expect(readAliasedProducts(null, ['a-shirt'])).toEqual([]);
   });
 });
 
@@ -70,20 +122,5 @@ describe('chunkHandles', () => {
 
   it('returns nothing for an empty list', () => {
     expect(chunkHandles([])).toEqual([]);
-  });
-});
-
-describe('LOOKBOOK_PRODUCTS_QUERY', () => {
-  it('requests market context, which is what makes per-market pricing work', () => {
-    expect(LOOKBOOK_PRODUCTS_QUERY).toContain('@inContext(country: $country');
-  });
-
-  it('asks for compare-at price, required for market compare-at overrides', () => {
-    expect(LOOKBOOK_PRODUCTS_QUERY).toContain('compareAtPriceRange');
-  });
-
-  it('asks for image dimensions, which prevent layout shift', () => {
-    expect(LOOKBOOK_PRODUCTS_QUERY).toContain('width');
-    expect(LOOKBOOK_PRODUCTS_QUERY).toContain('height');
   });
 });

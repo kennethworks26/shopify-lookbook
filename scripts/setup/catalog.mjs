@@ -22,6 +22,24 @@ import { createClient, assertNoUserErrors, log, fail, sleep } from './lib/admin.
 const VENDOR = 'Atelier Southbank';
 const IMAGE_BASE = 'https://images.unsplash.com';
 
+/**
+ * Sales channels a product must be published to, and why each one is needed.
+ *
+ * "Online Store" is the obvious one: without it the product has no storefront URL
+ * and the theme cannot render a product page.
+ *
+ * The custom app's own channel is the non-obvious one, and getting it wrong fails
+ * in a thoroughly confusing way. A custom app's Storefront API token only sees
+ * products published to *that app's* channel — not simply anything on the Online
+ * Store. Miss it and the Storefront API returns an empty product list with no
+ * error, no warning, and a perfectly valid-looking 200 response, while the admin
+ * shows the products as published and live.
+ *
+ * This name must match the custom app created in docs/runbooks/store-setup.md.
+ */
+const APP_CHANNEL = 'Lookbook Feature';
+const REQUIRED_CHANNELS = ['Online Store', APP_CHANNEL];
+
 /** Build a stable, reasonably sized Unsplash URL. */
 const image = (id) => `${IMAGE_BASE}/${id}?auto=format&fit=crop&w=1400&q=80`;
 
@@ -221,13 +239,25 @@ async function main() {
 
   log.step(`Catalog: ${PRODUCTS.length} products`);
 
-  // Products must be published to the Online Store or the Storefront API will not
-  // return them — the token only grants access to *published* product listings.
-  const onlineStore = (await query(PUBLICATIONS)).publications.nodes.find(
-    (node) => node.name === 'Online Store'
-  );
+  const publications = (await query(PUBLICATIONS)).publications.nodes;
+  const targets = REQUIRED_CHANNELS.map((name) => {
+    const publication = publications.find((node) => node.name === name);
 
-  if (!onlineStore) fail('No Online Store publication found on this shop.');
+    if (!publication) {
+      fail(
+        `No "${name}" sales channel on this shop.\n` +
+          `  Found: ${publications.map((p) => p.name).join(', ')}\n` +
+          (name === APP_CHANNEL
+            ? '  Install the custom app first — its channel appears only once installed.\n' +
+              '  See docs/runbooks/store-setup.md.'
+            : '')
+      );
+    }
+
+    return publication;
+  });
+
+  log.info(`Publishing to: ${targets.map((t) => t.name).join(', ')}`);
 
   for (const product of PRODUCTS) {
     const existing = (await query(PRODUCT_BY_HANDLE, { handle: product.handle })).productByHandle;
@@ -280,7 +310,7 @@ async function main() {
 
     const published = await query(PUBLISH, {
       id: productId,
-      input: [{ publicationId: onlineStore.id }],
+      input: targets.map((target) => ({ publicationId: target.id })),
     });
     assertNoUserErrors(published.publishablePublish, `publish ${product.handle}`);
 

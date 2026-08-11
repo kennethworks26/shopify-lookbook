@@ -20,12 +20,16 @@ function productNode(handle, currencyCode = 'AUD', amount = '129.00') {
   };
 }
 
+/**
+ * Build an aliased response the way the Storefront API returns one: `p0`, `p1`, …
+ * in the order the handles were requested, with null for anything unresolved.
+ */
 function okResponse(nodes) {
-  return {
-    ok: true,
-    status: 200,
-    json: async () => ({ data: { products: { nodes } } }),
-  };
+  const data = {};
+  nodes.forEach((node, index) => {
+    data[`p${index}`] = node;
+  });
+  return { ok: true, status: 200, json: async () => ({ data }) };
 }
 
 beforeEach(() => {
@@ -39,11 +43,31 @@ afterEach(() => {
 
 describe('fetchLookbookProducts', () => {
   it('returns products in merchandiser order', async () => {
-    fetch.mockResolvedValue(okResponse([productNode('b-belt'), productNode('a-knit')]));
+    fetch.mockResolvedValue(okResponse([productNode('a-knit'), productNode('b-belt')]));
 
     const result = await fetchLookbookProducts({ ...BASE, handles: ['a-knit', 'b-belt'] });
 
     expect(result.map((p) => p.handle)).toEqual(['a-knit', 'b-belt']);
+  });
+
+  it('looks handles up exactly rather than searching for them', async () => {
+    // products(query:) is a full-text search on the Storefront API and silently
+    // returns only some of the requested handles. Verified against a real store.
+    fetch.mockResolvedValue(okResponse([productNode('a-knit')]));
+
+    await fetchLookbookProducts({ ...BASE, handles: ['a-knit'] });
+
+    const body = JSON.parse(fetch.mock.calls[0][1].body);
+    expect(body.query).toContain('p0: product(handle: "a-knit")');
+    expect(body.query).not.toContain('products(');
+  });
+
+  it('drops a handle that resolved to null', async () => {
+    fetch.mockResolvedValue(okResponse([productNode('a-knit'), null]));
+
+    const result = await fetchLookbookProducts({ ...BASE, handles: ['a-knit', 'gone'] });
+
+    expect(result.map((p) => p.handle)).toEqual(['a-knit']);
   });
 
   it('sends the country as market context', async () => {
@@ -88,8 +112,12 @@ describe('fetchLookbookProducts', () => {
     const handles = Array.from({ length: HANDLES_PER_REQUEST + 2 }, (_, i) => `p-${i}`);
 
     fetch
-      .mockResolvedValueOnce(okResponse(handles.slice(0, HANDLES_PER_REQUEST).map(productNode)))
-      .mockResolvedValueOnce(okResponse(handles.slice(HANDLES_PER_REQUEST).map(productNode)));
+      .mockResolvedValueOnce(
+        okResponse(handles.slice(0, HANDLES_PER_REQUEST).map((h) => productNode(h)))
+      )
+      .mockResolvedValueOnce(
+        okResponse(handles.slice(HANDLES_PER_REQUEST).map((h) => productNode(h)))
+      );
 
     const result = await fetchLookbookProducts({ ...BASE, handles });
 

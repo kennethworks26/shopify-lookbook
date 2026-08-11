@@ -26,8 +26,13 @@ function productNode(handle, title) {
   };
 }
 
+/** Aliased response shape: p0, p1, … in requested order. */
 function resolveWith(nodes) {
-  return { ok: true, status: 200, json: async () => ({ data: { products: { nodes } } }) };
+  const data = {};
+  nodes.forEach((node, index) => {
+    data[`p${index}`] = node;
+  });
+  return { ok: true, status: 200, json: async () => ({ data }) };
 }
 
 beforeEach(() => {

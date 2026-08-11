@@ -1,4 +1,4 @@
-import { LOOKBOOK_PRODUCTS_QUERY, buildHandleQuery, chunkHandles, validHandles } from './query.js';
+import { buildLookbookQuery, chunkHandles, readAliasedProducts, validHandles } from './query.js';
 import { sortByHandleOrder } from '../lib/sort.js';
 
 /**
@@ -111,10 +111,8 @@ export async function fetchLookbookProducts({
             domain,
             token,
             apiVersion,
-            query: LOOKBOOK_PRODUCTS_QUERY,
+            query: buildLookbookQuery(batch),
             variables: {
-              query: buildHandleQuery(batch),
-              first: batch.length,
               country: country.toUpperCase(),
               language: language.toUpperCase(),
             },
@@ -125,10 +123,12 @@ export async function fetchLookbookProducts({
     )
   );
 
-  const products = responses.flatMap((data) => data?.products?.nodes ?? []);
+  const products = responses.flatMap((data, index) => readAliasedProducts(data, batches[index]));
 
-  // Batching and the API's own ordering both scramble the sequence; `safe` is the
-  // merchandiser's order and is the one that matters.
+  // Aliases already come back in the order requested, and Promise.all preserves
+  // batch order, so this is belt and braces. It stays because the merchandiser's
+  // ordering is a guarantee this function makes, and it should not quietly depend
+  // on how batching happens to be implemented.
   return sortByHandleOrder(products, safe);
 }
 
