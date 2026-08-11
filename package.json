@@ -13,7 +13,6 @@
     "dev": "shopify theme dev --path theme",
     "test": "vitest run --coverage",
     "test:watch": "vitest",
-    "test:e2e": "playwright test",
     "lint": "eslint . && npm run theme:check",
     "lint:fix": "eslint . --fix",
     "theme:check": "shopify theme check --path theme --fail-level warning",
@@ -32,7 +31,6 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
-    "@playwright/test": "^1.49.0",
     "@shopify/cli": "^3.75.0",
     "@shopify/prettier-plugin-liquid": "^1.9.0",
     "@tailwindcss/vite": "^4.0.0",

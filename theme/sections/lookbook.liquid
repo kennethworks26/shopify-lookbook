@@ -24,7 +24,7 @@
         global objects (shop, settings, request, localization), `section` exists only
         inside section files and would be blank in the snippet otherwise.
       {%- endcomment -%}
-      {%- render 'lookbook-mount', lookbook: lookbook, section: section -%}
+      {%- render 'lookbook-mount', lookbook: lookbook, section: section, heading_level: 'h1' -%}
     {%- elsif request.design_mode -%}
       {%- comment -%}
         Merchant-facing guidance, editor only. A section with nothing selected renders

@@ -15,6 +15,9 @@
     "pagination": {
       "previous": "Previous",
       "next": "Next"
+    },
+    "localization": {
+      "update": "Update country/region"
     }
   },
   "products": {

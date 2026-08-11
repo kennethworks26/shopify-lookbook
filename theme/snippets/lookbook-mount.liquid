@@ -99,8 +99,19 @@
       {%- endif -%}
     {%- endif -%}
 
+    {%- comment -%}
+      Heading level is chosen by the caller, because the same lookbook is the
+      page's main heading in one place and a subheading in another.
+
+      On the home page the lookbook *is* the page, so its title is the h1. On a
+      product page the product title already holds the h1, so a second one there
+      would leave the page with two competing top-level headings — and a document
+      with no h1 at all is just as wrong, which is what the home page had before.
+    {%- endcomment -%}
+    {%- assign heading_tag = heading_level | default: 'h2' -%}
+
     {%- if lookbook.title.value != blank -%}
-      <h2 class="lookbook-header__title">{{ lookbook.title.value }}</h2>
+      <{{ heading_tag }} class="lookbook-header__title">{{ lookbook.title.value }}</{{ heading_tag }}>
     {%- endif -%}
 
     {%- if section.settings.show_description and description_html != blank -%}

@@ -42,10 +42,16 @@ function lookbook(overrides = {}) {
   };
 }
 
-async function render({ entry = lookbook(), settings = {}, designMode = false } = {}) {
+async function render({
+  entry = lookbook(),
+  settings = {},
+  designMode = false,
+  headingLevel = undefined,
+} = {}) {
   return (
     await engine.renderFile('lookbook-mount', {
       lookbook: entry,
+      heading_level: headingLevel,
       section: {
         settings: {
           columns_desktop: 4,
@@ -125,6 +131,21 @@ describe('the server-rendered header', () => {
   it('renders no image when no cover image is set', async () => {
     const html = await render();
     expect(html).not.toContain('lookbook-header__image');
+  });
+
+  it('defaults to h2, for pages that already have an h1', async () => {
+    // On a product page the product title holds the h1; a second one would leave
+    // the page with two competing top-level headings.
+    const html = await render();
+    expect(html).toContain('<h2 class="lookbook-header__title">Autumn Layers</h2>');
+  });
+
+  it('uses h1 when the caller asks for it', async () => {
+    // The home page is nothing but the lookbook, so its title is the page heading.
+    // Without this the home page had no h1 at all.
+    const html = await render({ headingLevel: 'h1' });
+    expect(html).toContain('<h1 class="lookbook-header__title">Autumn Layers</h1>');
+    expect(html).not.toContain('<h2 class="lookbook-header__title"');
   });
 });
 

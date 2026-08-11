@@ -31,6 +31,12 @@
         <input type="hidden" name="return_to" value="{{ request.path }}">
 
         <label class="visually-hidden" for="market-selector">Country/region</label>
+        {%- comment -%}
+          Submits on change for the common case, with a real button behind
+          <noscript> for when it cannot. A select that only works with JavaScript
+          is a keyboard trap of a different kind: reachable, focusable, and unable
+          to do anything.
+        {%- endcomment -%}
         <select id="market-selector" name="country_code" onchange="this.form.submit()">
           {%- for country in localization.available_countries -%}
             <option
@@ -43,6 +49,10 @@
             </option>
           {%- endfor -%}
         </select>
+
+        <noscript>
+          <button type="submit">{{ 'general.localization.update' | t }}</button>
+        </noscript>
       </form>
     {%- endif -%}
   </div>
