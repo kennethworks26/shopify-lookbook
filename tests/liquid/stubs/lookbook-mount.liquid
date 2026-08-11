@@ -1,0 +1,11 @@
+{%- comment -%}
+  Test stub for snippets/lookbook-mount.liquid.
+
+  The matching tests care about *which* lookbooks were selected and in what order,
+  not about the island markup. This prints the chosen handle in brackets so the
+  test can assert on the selection.
+
+  This directory is placed ahead of theme/snippets in the Liquid engine's root, so
+  this file shadows the real snippet during tests only.
+{%- endcomment -%}
+[{{ lookbook.system.handle }}]

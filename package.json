@@ -46,6 +46,7 @@
     "eslint-plugin-react-hooks": "^5.1.0",
     "globals": "^15.14.0",
     "jsdom": "^25.0.1",
+    "liquidjs": "^10.28.0",
     "prettier": "^3.4.2",
     "tailwindcss": "^4.0.0",
     "vite": "^6.0.0",

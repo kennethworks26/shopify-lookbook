@@ -1,0 +1,78 @@
+{%- comment -%}
+  Render the lookbooks that contain a given product, capped at `limit`.
+
+  Accepts:
+    product - {Object} the product to match against
+    limit   - {Number} maximum lookbooks to render (default 2)
+
+  This snippet both selects and renders. Liquid's `render` runs in an isolated scope
+  and cannot return a value, so a snippet that only *computed* the matches would leave
+  its caller unable to see them -- and duplicating the selection logic into the
+  section to work around that is exactly how two copies drift apart. Ownership of the
+  rule therefore sits here, in one place, alongside the rendering it feeds.
+
+  The rule itself. The brief requires at most two lookbooks when a product appears in
+  three or more, but does not say *which* two, and "whichever two Shopify happens to
+  return" is not a rule -- admin ordering is not a contract, so it can differ between
+  staging and production and shift when a merchant edits an unrelated entry.
+  Selection is therefore explicit:
+
+    1. keep lookbooks whose product_handles contains this product's handle
+    2. sort ascending by the priority field
+    3. tie-break ascending by metaobject handle, so equal priorities stay stable
+    4. take the first `limit`
+
+  Steps 2 and 3 happen in a single string sort. Liquid has no sort-by-key for drops,
+  so each match is encoded as "PPPP:handle" -- zero-padded priority, then handle.
+  Sorting those lexicographically yields numeric priority order with alphabetical
+  tie-breaking, in one pass and with no nested loops.
+
+  Zero-padding to four digits is what makes a lexicographic sort behave numerically:
+  without it, "100" sorts before "20". Priorities above 9999 would break that, which
+  is well beyond any plausible number of lookbooks.
+{%- endcomment -%}
+
+{%- liquid
+  assign match_limit = limit | default: 2
+  assign encoded_matches = ''
+
+  for candidate in shop.metaobjects.lookbook.values
+    assign candidate_handles = candidate.product_handles.value
+
+    if candidate_handles contains product.handle
+      assign priority = candidate.priority.value | default: 9999
+      assign padded_priority = priority | prepend: '0000' | slice: -4, 4
+
+      assign encoded_matches = encoded_matches | append: padded_priority | append: ':' | append: candidate.system.handle | append: ','
+    endif
+  endfor
+
+  assign sorted_matches = encoded_matches | split: ',' | sort
+  assign selected_matches = sorted_matches | slice: 0, match_limit
+-%}
+
+{%- if selected_matches.size > 0 -%}
+  {%- for encoded in selected_matches -%}
+    {%- liquid
+      assign matched_handle = encoded | split: ':' | last
+      assign matched_lookbook = shop.metaobjects.lookbook[matched_handle]
+    -%}
+
+    {%- if matched_lookbook != blank -%}
+      {%- render 'lookbook-mount', lookbook: matched_lookbook, section: section -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- elsif request.design_mode -%}
+  {%- comment -%}
+    Editor-only. On the storefront, a product belonging to no lookbook renders nothing
+    at all -- that is the correct outcome, not an error worth showing a customer.
+  {%- endcomment -%}
+  <div class="lookbook-placeholder">
+    <p class="lookbook-placeholder__title">
+      {{ 'sections.lookbook_product.placeholder_title' | t }}
+    </p>
+    <p class="lookbook-placeholder__body">
+      {{ 'sections.lookbook_product.placeholder_body' | t: product: product.title }}
+    </p>
+  </div>
+{%- endif -%}
