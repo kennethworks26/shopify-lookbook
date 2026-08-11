@@ -56,12 +56,13 @@
       "label": "t:sections.lookbook.settings.columns_desktop.label"
     },
     {
-      "type": "range",
+      "type": "select",
       "id": "columns_mobile",
-      "min": 1,
-      "max": 2,
-      "step": 1,
-      "default": 2,
+      "options": [
+        { "value": "1", "label": "t:sections.lookbook.settings.columns_mobile.options.one" },
+        { "value": "2", "label": "t:sections.lookbook.settings.columns_mobile.options.two" }
+      ],
+      "default": "2",
       "label": "t:sections.lookbook.settings.columns_mobile.label"
     },
     {

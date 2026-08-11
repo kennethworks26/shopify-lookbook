@@ -9,8 +9,11 @@
   },
   {
     "name": "t:settings_schema.storefront_api.name",
-    "info": "t:settings_schema.storefront_api.info",
     "settings": [
+      {
+        "type": "paragraph",
+        "content": "t:settings_schema.storefront_api.info"
+      },
       {
         "type": "text",
         "id": "storefront_api_token",

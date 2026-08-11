@@ -46,7 +46,11 @@
           "label": "Columns on desktop"
         },
         "columns_mobile": {
-          "label": "Columns on mobile"
+          "label": "Columns on mobile",
+          "options": {
+            "one": "1 column",
+            "two": "2 columns"
+          }
         },
         "show_description": {
           "label": "Show description"

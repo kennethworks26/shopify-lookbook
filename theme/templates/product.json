@@ -8,7 +8,7 @@
       "type": "lookbook-product",
       "settings": {
         "columns_desktop": 4,
-        "columns_mobile": 2,
+        "columns_mobile": "2",
         "show_description": true,
         "show_price": true,
         "show_compare_at": true,

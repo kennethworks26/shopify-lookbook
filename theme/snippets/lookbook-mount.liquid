@@ -48,7 +48,14 @@
       {%- endcomment -%}
       "rootUrl": {{ routes.root_url | json }},
       "columnsDesktop": {{ section.settings.columns_desktop | default: 4 | json }},
-      "columnsMobile": {{ section.settings.columns_mobile | default: 2 | json }},
+      {%- comment -%}
+        `columns_mobile` is a select, so its value is the string "1" or "2".
+        Shopify requires range settings to have at least three steps, and three
+        columns on a phone is not a real option -- a select is the honest control.
+        `plus: 0` coerces it to a number so the React side receives a number
+        rather than having to guess at the type.
+      {%- endcomment -%}
+      "columnsMobile": {{ section.settings.columns_mobile | plus: 0 | default: 2 | json }},
       "showDescription": {{ section.settings.show_description | json }},
       "showPrice": {{ section.settings.show_price | json }},
       "showCompareAt": {{ section.settings.show_compare_at | json }},
