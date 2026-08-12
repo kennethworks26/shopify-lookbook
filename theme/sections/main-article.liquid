@@ -1,0 +1,43 @@
+{%- comment -%}
+  A single article.
+{%- endcomment -%}
+
+<article class="article">
+  <header class="article__header">
+    <h1 class="article__title">{{ article.title }}</h1>
+    <p class="article__meta">
+      <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+        {{ article.published_at | date: format: 'date' }}
+      </time>
+      {%- if article.author != blank -%}
+        <span aria-hidden="true"> · </span>{{ article.author }}
+      {%- endif -%}
+    </p>
+  </header>
+
+  {%- if article.image -%}
+    <img
+      class="article__image"
+      src="{{ article.image | image_url: width: 1400 }}"
+      alt="{{ article.image.alt | escape }}"
+      width="{{ article.image.width }}"
+      height="{{ article.image.height }}"
+      loading="eager"
+    >
+  {%- endif -%}
+
+  <div class="article__content rte">{{ article.content }}</div>
+
+  <p class="article__back">
+    <a href="{{ blog.url }}">{{ 'blogs.general.back_to_blog' | t: title: blog.title }}</a>
+  </p>
+</article>
+
+{% schema %}
+{
+  "name": "t:sections.main_article.name",
+  "tag": "section",
+  "class": "main-article",
+  "settings": []
+}
+{% endschema %}

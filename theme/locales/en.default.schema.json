@@ -102,6 +102,12 @@
     },
     "main_404": {
       "name": "404"
+    },
+    "main_blog": {
+      "name": "Blog posts"
+    },
+    "main_article": {
+      "name": "Blog post"
     }
   }
 }

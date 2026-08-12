@@ -52,5 +52,11 @@
       "update": "Update cart",
       "checkout": "Check out"
     }
+  },
+  "blogs": {
+    "general": {
+      "no_articles": "There are no posts in this blog yet.",
+      "back_to_blog": "Back to {{ title }}"
+    }
   }
 }
