@@ -197,13 +197,25 @@ docs/adr/                architecture decision records
 The two things most likely to be probed in review — the max-two rule and market pricing —
 are tested directly rather than incidentally.
 
-**No end-to-end suite.** The store is password-protected, so browser tests would need the
-storefront password as a secret, and tests that cannot be run are worse than none. Three
-flows would be worth covering once that is available: the home page rendering its selected
-lookbook from a network call rather than from the HTML; the product page for
-`rust-bomber-jacket` rendering exactly two lookbooks; and switching market to Japan
-changing prices to JPY at price-list values. All three are verifiable by hand today —
-see the checklist in `docs/runbooks/store-setup.md`.
+**End-to-end.** Three flows are covered against a real storefront, because nothing else
+proves the whole chain: Liquid selecting lookbooks, the island hydrating, the Storefront
+API answering, and market pricing resolving. That chain is where this project's two worst
+bugs lived.
+
+```bash
+SHOPIFY_STORE_URL=https://your-store.myshopify.com \
+SHOPIFY_STORE_PASSWORD=your-storefront-password \
+npm run test:e2e
+```
+
+They assert that product data arrives over the network rather than in the HTML, that a
+product in three lookbooks renders exactly two, and that switching market to Japan shows
+yen with no decimal places at a value that is not a conversion.
+
+Without those variables they skip rather than fail, so a fork with no secrets still gets
+a green run. CI runs them as a separate job from lint and unit tests: a live storefront
+can fail for reasons that have nothing to do with the commit, and that should not block
+unrelated work.
 
 ---
 

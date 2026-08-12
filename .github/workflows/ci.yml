@@ -12,6 +12,7 @@ concurrency:
 
 jobs:
   verify:
+    name: Lint, test, build
     runs-on: ubuntu-latest
 
     steps:
@@ -46,3 +47,55 @@ jobs:
       # else in this pipeline would notice.
       - name: Verify committed bundle matches source
         run: npm run verify:bundle
+
+  e2e:
+    name: End-to-end (live store)
+    runs-on: ubuntu-latest
+    needs: verify
+
+    # Deliberately a separate job from `verify`.
+    #
+    # These tests drive a real Shopify storefront, so they can fail for reasons
+    # that have nothing to do with the commit — an outage, a merchant edit, a
+    # network blip. Keeping them apart means the unit pipeline stays a statement
+    # about the code, and a red storefront never blocks unrelated work.
+    #
+    # Skipped entirely without the store secrets, which is the normal state for a
+    # fork. The specs also self-skip on missing configuration, so this condition
+    # is belt and braces rather than the only guard.
+    if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      # Chromium only. These assert on markup and network traffic, not on
+      # cross-browser rendering, so three engines would triple the runtime to
+      # tell us the same thing.
+      - name: Install Chromium
+        run: npx playwright install chromium --with-deps
+
+      - name: Run end-to-end tests
+        env:
+          SHOPIFY_STORE_URL: ${{ secrets.SHOPIFY_STORE_URL }}
+          SHOPIFY_STORE_PASSWORD: ${{ secrets.SHOPIFY_STORE_PASSWORD }}
+        run: npm run test:e2e
+
+      # Traces and screenshots are only written for failures, so this uploads
+      # nothing on a green run.
+      - name: Upload failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

@@ -25,7 +25,8 @@
     "setup:metaobjects": "node scripts/setup/metaobjects.mjs",
     "setup:catalog": "node scripts/setup/catalog.mjs",
     "setup:markets": "node scripts/setup/markets.mjs",
-    "setup:lookbooks": "node scripts/setup/lookbooks.mjs"
+    "setup:lookbooks": "node scripts/setup/lookbooks.mjs",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "react": "^19.0.0",
@@ -33,6 +34,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
+    "@playwright/test": "^1.62.1",
     "@shopify/cli": "^3.75.0",
     "@shopify/prettier-plugin-liquid": "^1.9.0",
     "@tailwindcss/vite": "^4.0.0",
