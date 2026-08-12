@@ -45,7 +45,12 @@ export function ProductCard({
         // affordance that matters for keyboard users and is kept.
         className="block no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lookbook-ink"
       >
-        <div className="relative overflow-hidden bg-lookbook-surface">
+        {/*
+          `overflow-hidden` is what actually applies the rounding: the image itself
+          scales on hover, and a transform on a rounded child escapes the parent's
+          corners without a clip.
+        */}
+        <div className="relative overflow-hidden rounded-lookbook bg-lookbook-surface">
           {product.featuredImage ? (
             <img
               src={product.featuredImage.url}
@@ -71,7 +76,7 @@ export function ProductCard({
               className="aspect-[3/4] w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             />
           ) : (
-            <div className="aspect-[3/4] w-full bg-lookbook-line" />
+            <div className="aspect-[3/4] w-full rounded-lookbook bg-lookbook-line" />
           )}
 
           {onSale && (
