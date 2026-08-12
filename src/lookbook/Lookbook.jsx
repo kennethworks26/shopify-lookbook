@@ -137,11 +137,19 @@ export function Lookbook({
      */
     <section className="lookbook-root font-display" aria-busy={status === 'loading'}>
       {status === 'loading' ? (
-        /* The skeleton stays a grid in both layouts. It occupies one screenful
-           either way, and a skeleton that scrolls sideways invites a shopper to
-           interact with placeholders. */
+        /*
+         * The skeleton stays a grid in both layouts — a skeleton that scrolls
+         * sideways invites a shopper to interact with placeholders.
+         *
+         * How many depends on the layout, because the skeleton's job is to hold
+         * the space the real content will take. A grid renders every handle, so
+         * the placeholders match the finished grid exactly and nothing below it
+         * moves when the products land. A slider only ever shows one screenful,
+         * so more than that would reserve height the slider never uses and cause
+         * the shift it is meant to prevent.
+         */
         <div className={gridClasses}>
-          {handles.slice(0, columnsDesktop).map((handle) => (
+          {(isSlider ? handles.slice(0, columnsDesktop) : handles).map((handle) => (
             <div key={handle} className="animate-pulse">
               <div className="aspect-[3/4] w-full rounded-lookbook bg-lookbook-line" />
               <div className="mt-3 h-3 w-2/3 bg-lookbook-line" />

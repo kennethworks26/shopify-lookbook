@@ -33,14 +33,20 @@
 
   /*
    * Image corner rounding, as a token rather than a utility picked per element.
-   * Three places have to agree — the card image, the no-image placeholder, and the
-   * loading skeleton — and a skeleton with square corners popping into a rounded
-   * image is exactly the kind of drift a shared token prevents.
+   * Several places have to agree — the card image, the no-image placeholder, and
+   * the loading skeleton — and a skeleton with square corners popping into a
+   * rounded image is exactly the kind of drift a shared token prevents.
+   *
+   * The value itself is owned by the theme, in assets/base.css, which rounds every
+   * Liquid-rendered image the same way. Deferring to it here is what stops the
+   * React cards and the catalog from disagreeing: one edit restyles both. The
+   * fallback covers the island being rendered without the theme's stylesheet,
+   * which is the case in unit tests.
    *
    * Kept small on purpose. Editorial product photography reads as cropped artwork;
    * a large radius starts to read as a UI chip instead.
    */
-  --radius-lookbook: 0.375rem;
+  --radius-lookbook: var(--image-radius, 0.375rem);
 }
 
 /*
