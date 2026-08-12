@@ -40,6 +40,14 @@
           "info": "Manage lookbooks in Content → Metaobjects → Lookbooks."
         },
         "header_layout": "Layout",
+        "layout": {
+          "label": "Layout",
+          "info": "A slider keeps a long lookbook to one row and lets shoppers scroll through it. A grid shows everything at once.",
+          "options": {
+            "grid": "Grid",
+            "slider": "Slider"
+          }
+        },
         "header_content": "Content",
         "header_spacing": "Spacing",
         "columns_desktop": {

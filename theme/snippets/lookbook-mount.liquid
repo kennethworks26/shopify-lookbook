@@ -77,6 +77,13 @@
         rather than having to guess at the type.
       {%- endcomment -%}
       "columnsMobile": {{ section.settings.columns_mobile | plus: 0 | default: 2 | json }},
+      {%- comment -%}
+        Grid or slider. Both sections expose this setting identically -- the product
+        page ships as a slider through its preset and its template value, not through
+        a different schema, so the brief's "same settings as the home page section"
+        stays true and a merchant can still choose either layout in either place.
+      {%- endcomment -%}
+      "layout": {{ section.settings.layout | default: 'grid' | json }},
       "showDescription": {{ section.settings.show_description | json }},
       "showPrice": {{ section.settings.show_price | json }},
       "showCompareAt": {{ section.settings.show_compare_at | json }},

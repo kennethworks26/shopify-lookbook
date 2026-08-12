@@ -22,6 +22,16 @@
   --color-bg: #ffffff;
 
   --space-gutter: 1.5rem;
+
+  /*
+   * Corner rounding for every displayed image, theme-wide.
+   *
+   * This is the canonical definition. The lookbook island reads it too — its
+   * Tailwind theme sets --radius-lookbook to var(--image-radius), so the
+   * React-rendered cards and the Liquid-rendered catalog cannot drift apart.
+   * Changing this one value restyles both.
+   */
+  --image-radius: 0.375rem;
 }
 
 *,
@@ -47,9 +57,20 @@ h3 {
   margin: 0;
 }
 
+/*
+ * Every displayed image is rounded, set once on the element rather than added to
+ * each component's own rule. The theme has no <img> icons — the only icons are
+ * inline SVG — so there is nothing here that a radius would be wrong for, and a
+ * per-component list would be a running maintenance cost that silently misses
+ * whichever image gets added next.
+ *
+ * Placeholders are matched to it below, so a product with no media keeps the same
+ * silhouette as one with.
+ */
 img {
   max-width: 100%;
   height: auto;
+  border-radius: var(--image-radius);
 }
 
 /*
@@ -350,6 +371,8 @@ a {
   width: 100%;
   object-fit: cover;
   background: var(--color-line);
+  /* The <img> already inherits this; the placeholder is a <div> and does not. */
+  border-radius: var(--image-radius);
 }
 
 .card-product__vendor {

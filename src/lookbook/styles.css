@@ -30,6 +30,23 @@
   --color-lookbook-sale: oklch(0.52 0.19 25);
 
   --spacing-gutter: 1.5rem;
+
+  /*
+   * Image corner rounding, as a token rather than a utility picked per element.
+   * Several places have to agree — the card image, the no-image placeholder, and
+   * the loading skeleton — and a skeleton with square corners popping into a
+   * rounded image is exactly the kind of drift a shared token prevents.
+   *
+   * The value itself is owned by the theme, in assets/base.css, which rounds every
+   * Liquid-rendered image the same way. Deferring to it here is what stops the
+   * React cards and the catalog from disagreeing: one edit restyles both. The
+   * fallback covers the island being rendered without the theme's stylesheet,
+   * which is the case in unit tests.
+   *
+   * Kept small on purpose. Editorial product photography reads as cropped artwork;
+   * a large radius starts to read as a UI chip instead.
+   */
+  --radius-lookbook: var(--image-radius, 0.375rem);
 }
 
 /*
@@ -55,4 +72,30 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+
+  /*
+   * Scroll behaviour is not covered by the durations above — it is a separate
+   * property, and a smooth-scrolling carousel is exactly the kind of large
+   * moving surface this preference exists to stop. The slider also checks the
+   * same query before calling scrollBy; this covers the paths the browser
+   * scrolls on its own, such as focusing a card that is off-screen.
+   */
+  .lookbook-track {
+    scroll-behavior: auto !important;
+  }
+}
+
+/*
+ * The slider's scrollbar is hidden because the track carries two clearer
+ * affordances already — the previous/next buttons and the partially visible next
+ * card. Scrolling itself is untouched: touch, trackpad, shift+wheel and keyboard
+ * focus all still move the track, so this hides the indicator, never the ability.
+ */
+.lookbook-track {
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+
+.lookbook-track::-webkit-scrollbar {
+  display: none;
 }

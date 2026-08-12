@@ -1,4 +1,5 @@
 import { ProductCard } from './ProductCard.jsx';
+import { Slider } from './Slider.jsx';
 import { useLookbookProducts } from './useLookbookProducts.js';
 
 /**
@@ -21,6 +22,26 @@ const MOBILE_COLUMNS = {
   2: 'grid-cols-2',
 };
 
+/*
+ * Slide widths, for the same build-time reason as the column maps above.
+ *
+ * These are deliberately fractions of the track rather than of the row: at
+ * `basis-1/4` with a gap, the fourth card is pushed just past the right edge and
+ * peeks. That peek is the affordance — it is what tells a shopper the row scrolls,
+ * on touch devices where the buttons are the only other clue.
+ */
+const DESKTOP_SLIDES = {
+  2: 'lg:basis-1/2',
+  3: 'lg:basis-1/3',
+  4: 'lg:basis-1/4',
+  5: 'lg:basis-1/5',
+};
+
+const MOBILE_SLIDES = {
+  1: 'basis-full',
+  2: 'basis-1/2',
+};
+
 export function Lookbook({
   title,
   handles,
@@ -36,6 +57,7 @@ export function Lookbook({
   showVendor = false,
   rootUrl = '/',
   cardHeadingLevel = 'h3',
+  layout = 'grid',
   designMode = false,
 }) {
   const { status, products, missing, error } = useLookbookProducts({
@@ -63,17 +85,48 @@ export function Lookbook({
     ) : null;
   }
 
+  const isSlider = layout === 'slider';
+
+  /*
+   * `list-none` is not decoration. Preflight is deliberately not imported (see
+   * docs/adr/0004-tailwind-without-preflight.md), so a <ul> keeps the browser's
+   * default discs and indent. Anything Preflight would normally have reset has
+   * to be asked for explicitly here.
+   */
   const gridClasses = [
-    /*
-     * `list-none` is not decoration. Preflight is deliberately not imported (see
-     * docs/adr/0004-tailwind-without-preflight.md), so a <ul> keeps the browser's
-     * default discs and indent. Anything Preflight would normally have reset has
-     * to be asked for explicitly here.
-     */
     'grid list-none gap-x-4 gap-y-8 p-0 m-0',
     MOBILE_COLUMNS[columnsMobile] ?? MOBILE_COLUMNS[2],
     DESKTOP_COLUMNS[columnsDesktop] ?? DESKTOP_COLUMNS[4],
   ].join(' ');
+
+  const trackClasses = [
+    'lookbook-track flex list-none gap-x-4 overflow-x-auto p-0 m-0 snap-x snap-mandatory',
+    // Room for the focus ring on a card that is scrolled into view by keyboard;
+    // without it the ring is clipped by the overflow container.
+    'py-1',
+  ].join(' ');
+
+  const slideClasses = [
+    'flex-none snap-start',
+    MOBILE_SLIDES[columnsMobile] ?? MOBILE_SLIDES[2],
+    DESKTOP_SLIDES[columnsDesktop] ?? DESKTOP_SLIDES[4],
+  ].join(' ');
+
+  const cards = products.map((product, index) => (
+    <li key={product.id} className={isSlider ? slideClasses : undefined}>
+      <ProductCard
+        product={product}
+        showVendor={showVendor}
+        showPrice={showPrice}
+        showCompareAt={showCompareAt}
+        rootUrl={rootUrl}
+        headingTag={cardHeadingLevel}
+        /* The first row is above the fold on desktop — and in a slider, the first
+           screenful is the same set of cards, so the rule holds either way. */
+        priority={index < columnsDesktop}
+      />
+    </li>
+  ));
 
   return (
     /*
@@ -84,32 +137,35 @@ export function Lookbook({
      */
     <section className="lookbook-root font-display" aria-busy={status === 'loading'}>
       {status === 'loading' ? (
+        /*
+         * The skeleton stays a grid in both layouts — a skeleton that scrolls
+         * sideways invites a shopper to interact with placeholders.
+         *
+         * How many depends on the layout, because the skeleton's job is to hold
+         * the space the real content will take. A grid renders every handle, so
+         * the placeholders match the finished grid exactly and nothing below it
+         * moves when the products land. A slider only ever shows one screenful,
+         * so more than that would reserve height the slider never uses and cause
+         * the shift it is meant to prevent.
+         */
         <div className={gridClasses}>
-          {handles.slice(0, columnsDesktop).map((handle) => (
+          {(isSlider ? handles.slice(0, columnsDesktop) : handles).map((handle) => (
             <div key={handle} className="animate-pulse">
-              <div className="aspect-[3/4] w-full bg-lookbook-line" />
+              <div className="aspect-[3/4] w-full rounded-lookbook bg-lookbook-line" />
               <div className="mt-3 h-3 w-2/3 bg-lookbook-line" />
               <div className="mt-2 h-3 w-1/3 bg-lookbook-line" />
             </div>
           ))}
         </div>
+      ) : isSlider ? (
+        <Slider
+          label={title ? `${title} products` : 'Lookbook products'}
+          trackClassName={trackClasses}
+        >
+          {cards}
+        </Slider>
       ) : (
-        <ul className={gridClasses}>
-          {products.map((product, index) => (
-            <li key={product.id}>
-              <ProductCard
-                product={product}
-                showVendor={showVendor}
-                showPrice={showPrice}
-                showCompareAt={showCompareAt}
-                rootUrl={rootUrl}
-                headingTag={cardHeadingLevel}
-                /* The first row is above the fold on desktop. */
-                priority={index < columnsDesktop}
-              />
-            </li>
-          ))}
-        </ul>
+        <ul className={gridClasses}>{cards}</ul>
       )}
 
       {designMode && missing.length > 0 && (
