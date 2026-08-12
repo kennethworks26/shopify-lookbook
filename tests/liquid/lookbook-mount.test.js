@@ -148,6 +148,11 @@ describe('the payload handed to React', () => {
     expect(config.language).toBe('EN');
   });
 
+  it('sends a card heading level one below the lookbook heading', async () => {
+    expect(payload(await render({ headingLevel: 'h1' })).cardHeadingLevel).toBe('h2');
+    expect(payload(await render()).cardHeadingLevel).toBe('h3');
+  });
+
   it('sends columnsMobile as a number, not the select value string', async () => {
     // The setting is a select, so its raw value is "2". React indexes a lookup
     // table with it, and a type mismatch there silently collapses the grid.

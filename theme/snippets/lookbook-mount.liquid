@@ -23,6 +23,22 @@
 -%}
 
 {%- if handles.size > 0 -%}
+  {%- liquid
+    # Heading level is chosen by the caller: the same lookbook is the page's main
+    # heading in one place and a subheading in another. On the home page the
+    # lookbook is the page, so its title is the h1; on a product page the product
+    # title already holds the h1.
+    assign heading_tag = heading_level | default: 'h2'
+
+    # Card titles sit exactly one level below, so the outline never skips a level
+    # -- which is what Lighthouse flags as a non-sequential heading order.
+    if heading_tag == 'h1'
+      assign card_heading_tag = 'h2'
+    else
+      assign card_heading_tag = 'h3'
+    endif
+  -%}
+
   {%- comment -%}
     `metafield_tag` renders a rich text field to HTML. Outputting the field directly
     yields its raw JSON document instead — which renders as visible braces on the
@@ -51,6 +67,7 @@
         out of their locale on every card click.
       {%- endcomment -%}
       "rootUrl": {{ routes.root_url | json }},
+      "cardHeadingLevel": {{ card_heading_tag | json }},
       "columnsDesktop": {{ section.settings.columns_desktop | default: 4 | json }},
       {%- comment -%}
         `columns_mobile` is a select, so its value is the string "1" or "2".
@@ -101,7 +118,6 @@
         would leave the page with two competing top-level headings — and a document
         with no h1 at all is just as wrong, which is what the home page had before.
       {%- endcomment -%}
-      {%- assign heading_tag = heading_level | default: 'h2' -%}
 
       {%- if lookbook.title.value != blank -%}
         <{{ heading_tag }} class="lookbook-header__title">{{ lookbook.title.value }}</{{ heading_tag }}>

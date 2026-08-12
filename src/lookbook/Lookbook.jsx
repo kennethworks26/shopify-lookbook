@@ -35,6 +35,7 @@ export function Lookbook({
   showCompareAt = true,
   showVendor = false,
   rootUrl = '/',
+  cardHeadingLevel = 'h3',
   designMode = false,
 }) {
   const { status, products, missing, error } = useLookbookProducts({
@@ -102,6 +103,7 @@ export function Lookbook({
                 showPrice={showPrice}
                 showCompareAt={showCompareAt}
                 rootUrl={rootUrl}
+                headingTag={cardHeadingLevel}
               />
             </li>
           ))}

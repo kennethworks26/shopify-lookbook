@@ -31,6 +31,22 @@ describe('ProductCard', () => {
     expect(screen.getByRole('link').className).toContain('no-underline');
   });
 
+  it('renders its title at the heading level it is given', () => {
+    // Card titles sit one level below the lookbook heading so the document
+    // outline never skips a level — Lighthouse flags that as a non-sequential
+    // heading order, and it was doing so on the home page.
+    const { container } = render(
+      <ProductCard product={makeProduct()} {...defaults} headingTag="h2" />
+    );
+    expect(container.querySelector('h2')).toHaveTextContent('Merino Crew Knit');
+    expect(container.querySelector('h3')).toBeNull();
+  });
+
+  it('defaults to h3, the safe level under an h2 lookbook heading', () => {
+    const { container } = render(<ProductCard product={makeProduct()} {...defaults} />);
+    expect(container.querySelector('h3')).toHaveTextContent('Merino Crew Knit');
+  });
+
   it('links to the product page', () => {
     render(<ProductCard product={makeProduct()} {...defaults} />);
     expect(screen.getByRole('link')).toHaveAttribute('href', '/products/merino-crew-knit');

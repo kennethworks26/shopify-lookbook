@@ -7,7 +7,14 @@ import { formatMoney, isOnSale, discountPercent } from './lib/money.js';
  * so it is already the correct amount for the shopper's market. Nothing in this
  * component does arithmetic on money beyond computing a display-only discount badge.
  */
-export function ProductCard({ product, showVendor, showPrice, showCompareAt, rootUrl = '/' }) {
+export function ProductCard({
+  product,
+  showVendor,
+  showPrice,
+  showCompareAt,
+  rootUrl = '/',
+  headingTag: Heading = 'h3',
+}) {
   /*
    * `availableForSale` is fetched but deliberately not rendered as a badge.
    *
@@ -69,7 +76,12 @@ export function ProductCard({ product, showVendor, showPrice, showCompareAt, roo
             <p className="text-xs uppercase tracking-wider text-lookbook-muted">{product.vendor}</p>
           )}
 
-          <h3 className="mt-1 text-sm font-medium text-lookbook-ink">{product.title}</h3>
+          {/*
+            Level comes from Liquid, one below the lookbook heading, so the
+            document outline never skips a level. Defaults to h3 — the safe case
+            when the lookbook itself is an h2.
+          */}
+          <Heading className="mt-1 text-sm font-medium text-lookbook-ink">{product.title}</Heading>
 
           {showPrice && price && (
             <p className="mt-1 flex items-baseline gap-2 text-sm">
