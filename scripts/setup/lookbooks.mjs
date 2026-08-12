@@ -2,7 +2,7 @@
 /**
  * Seed three lookbooks, deliberately overlapping.
  *
- * The overlap is the point. `quilted-liner-jacket` belongs to all three, so its
+ * The overlap is the point. `rust-bomber-jacket` belongs to all three, so its
  * product page is the live proof of the brief's "maximum of two" rule: it must
  * render Autumn Layers (priority 10) and Weekend Edit (20), and never Monochrome
  * Study (30). A reviewer can check that in about five seconds, which is worth more
@@ -30,11 +30,23 @@ const LOOKBOOKS = [
     priority: 10,
     description:
       'Transitional weight, worn together. Pieces that hold their shape under a coat and still read on their own.',
+    /*
+     * Eight, and ordered head to toe: outerwear, then shirting, then knitwear,
+     * then trousers, then shoes. Order is merchandising, not decoration — it is
+     * preserved end to end (lib/sort.js restores it after the API, which does not
+     * promise to return aliases in order), so this is the sequence a shopper sees.
+     *
+     * Eight also fills two clean rows at the default four columns, which is what
+     * the home-page grid is sized for.
+     */
     productHandles: [
       'camel-wool-overcoat',
       ANCHOR,
+      'chambray-shirt',
       'tie-neck-silk-blouse',
+      'cotton-crew-tee',
       'satin-jogger-trouser',
+      'patched-denim-jean',
       'monk-strap-shoe',
     ],
   },
