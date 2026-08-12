@@ -95,7 +95,7 @@ export function Lookbook({
         </div>
       ) : (
         <ul className={gridClasses}>
-          {products.map((product) => (
+          {products.map((product, index) => (
             <li key={product.id}>
               <ProductCard
                 product={product}
@@ -104,6 +104,8 @@ export function Lookbook({
                 showCompareAt={showCompareAt}
                 rootUrl={rootUrl}
                 headingTag={cardHeadingLevel}
+                /* The first row is above the fold on desktop. */
+                priority={index < columnsDesktop}
               />
             </li>
           ))}

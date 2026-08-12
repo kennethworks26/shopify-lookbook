@@ -219,6 +219,69 @@ unrelated work.
 
 ---
 
+## Performance
+
+Measured with Lighthouse against the live storefront, mobile preset, home page.
+
+|                              |           |
+| ---------------------------- | --------- |
+| Performance                  | 67        |
+| Accessibility                | 98        |
+| Best Practices               | 79        |
+| SEO                          | 100       |
+| First Contentful Paint       | 1.9 s     |
+| Speed Index                  | 2.7 s     |
+| Total Blocking Time          | 220 ms    |
+| Cumulative Layout Shift      | 0.098     |
+| **Largest Contentful Paint** | **9.6 s** |
+
+LCP is poor and it is worth being precise about why, because the cause is
+structural rather than an oversight. Lighthouse breaks it down as:
+
+| Phase                   | Time         |
+| ----------------------- | ------------ |
+| Time to first byte      | 633 ms       |
+| **Resource load delay** | **7,412 ms** |
+| Resource load time      | 690 ms       |
+| Render delay            | 881 ms       |
+
+The LCP element is a product image, and 77% of the time is _load delay_ — the gap
+before that image can even begin downloading. Nothing can shorten it by
+optimising the image, because the browser does not know the URL yet. The
+sequence is: parse the document, download and execute the island, POST to the
+Storefront API, receive product data, render the cards, and only then start
+fetching images.
+
+That sequence is the brief's requirement made visible. Lookbooks store handles
+only and product data is fetched at runtime, so product imagery is necessarily
+behind an API round trip. A theme that rendered the same grid from Liquid would
+have its image URLs in the initial HTML and a far better LCP — and would not
+satisfy the brief.
+
+What has been done about it:
+
+- The header — cover, title, description — is server-rendered, so something
+  meaningful paints at 1.9 s rather than waiting on hydration.
+- Above-the-fold cards load `eager` at `fetchpriority="high"`; the rest stay
+  lazy. Once the URLs arrive the first row is not queued behind anything. This
+  moved Speed Index from 4.3 s to 2.7 s.
+- Every image carries intrinsic `width` and `height`, so the grid reserves its
+  space and layout does not shift as images arrive. CLS is 0.098, under the
+  0.1 threshold, and what remains comes from Shopify's own injected scripts.
+- `preconnect` to the image CDN, so the connection is warm before the first
+  image URL exists.
+
+The remaining lever, not taken here, is to start the Storefront request before
+the React bundle has finished loading — a small inline script that fires the
+fetch from the mount node's data attribute and hands the promise to the island.
+That removes bundle download and parse from the critical path and should take a
+large bite out of the 7.4 s load delay. It is the right next optimisation and is
+left deliberately, because it adds a second code path to the one part of this
+project where correctness matters most.
+
+Best Practices sits at 79 because of third-party cookies and console output from
+Shopify's own scripts, not the theme.
+
 ## Notes for a reviewer
 
 **Where to look first.** `theme/snippets/lookbook-match.liquid` is the heart of the

@@ -14,6 +14,7 @@ export function ProductCard({
   showCompareAt,
   rootUrl = '/',
   headingTag: Heading = 'h3',
+  priority = false,
 }) {
   /*
    * `availableForSale` is fetched but deliberately not rendered as a badge.
@@ -56,7 +57,16 @@ export function ProductCard({
                */
               width={product.featuredImage.width}
               height={product.featuredImage.height}
-              loading="lazy"
+              /*
+               * Above-the-fold cards load eagerly at high priority; the rest stay
+               * lazy. These images cannot start downloading until the island has
+               * booted and the Storefront API has answered, so by the time their
+               * URLs exist they are already on the critical path — leaving the
+               * first row lazy adds a second delay on top of that and is the
+               * single biggest contributor to LCP here.
+               */
+              loading={priority ? 'eager' : 'lazy'}
+              fetchPriority={priority ? 'high' : 'auto'}
               decoding="async"
               className="aspect-[3/4] w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             />

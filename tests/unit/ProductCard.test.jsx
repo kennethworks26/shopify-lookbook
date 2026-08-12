@@ -47,6 +47,21 @@ describe('ProductCard', () => {
     expect(container.querySelector('h3')).toHaveTextContent('Merino Crew Knit');
   });
 
+  it('loads lazily by default', () => {
+    render(<ProductCard product={makeProduct()} {...defaults} />);
+    expect(screen.getByRole('img')).toHaveAttribute('loading', 'lazy');
+  });
+
+  it('loads eagerly at high priority when marked above the fold', () => {
+    // These images cannot start downloading until the API answers, so they are
+    // already on the critical path by the time their URLs exist. Leaving the
+    // first row lazy stacks a second delay on top of that.
+    render(<ProductCard product={makeProduct()} {...defaults} priority />);
+    const img = screen.getByRole('img');
+    expect(img).toHaveAttribute('loading', 'eager');
+    expect(img).toHaveAttribute('fetchpriority', 'high');
+  });
+
   it('links to the product page', () => {
     render(<ProductCard product={makeProduct()} {...defaults} />);
     expect(screen.getByRole('link')).toHaveAttribute('href', '/products/merino-crew-knit');
