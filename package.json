@@ -10,7 +10,7 @@
   "scripts": {
     "build": "vite build",
     "build:watch": "vite build --watch",
-    "dev": "shopify theme dev --path theme",
+    "dev": "node scripts/dev.mjs",
     "test": "vitest run --coverage",
     "test:watch": "vitest",
     "lint": "eslint . && npm run theme:check",

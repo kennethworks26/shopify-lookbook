@@ -18,13 +18,11 @@ Built for the Convert Digital technical assessment. No third-party apps.
 
 ## What it does
 
-Two placements, deliberately different:
-
 **Home page** — the merchant picks which lookbook to show, in the theme customizer.
 
 **Product page** — no picker. The section surfaces whichever lookbooks contain the
 product being viewed, capped at two. Every other setting is identical to the home-page
-section.
+section, because both render through `snippets/lookbook-mount.liquid`.
 
 `rust-bomber-jacket` belongs to all three seeded lookbooks, so its product page is the
 live proof of the cap: it renders **Autumn Layers** and **Weekend Edit**, never
@@ -36,7 +34,7 @@ live proof of the cap: it renders **Autumn Layers** and **Weekend Edit**, never
 
 ```bash
 npm install
-cp .env.example .env        # then fill it in — see docs/runbooks/store-setup.md
+cp .env.example .env        # see docs/runbooks/store-setup.md
 
 npm run setup:metaobjects   # the lookbook metaobject definition
 npm run setup:catalog       # 11 demo products with imagery
@@ -44,20 +42,29 @@ npm run setup:lookbooks     # 3 overlapping lookbooks
 npm run setup:markets       # AU + JP markets, JPY price list
 
 npm run build               # React island -> theme/assets/lookbook.{js,css}
-npm run theme:push          # upload as a new unpublished theme
+npm run theme:push          # create the theme (unpublished)
+npm run theme:deploy        # update the live theme
 ```
 
-Every `setup:*` script is idempotent — run them as many times as you like.
+Every `setup:*` script is idempotent. Then paste the Storefront API token into
+**Online Store → Themes → Customize → Theme settings**; without it the sections render
+nothing and explain why in the editor.
 
-Then set the Storefront API token in **Online Store → Themes → Customize → Theme
-settings → Storefront API**. Without it the sections render nothing on the storefront
-and explain why in the editor.
+### Local development
 
-### Everyday commands
+Two terminals:
 
 ```bash
-npm run dev            # shopify theme dev
 npm run build:watch    # rebuild the island on change
+npm run dev            # theme dev server on http://127.0.0.1:9292
+```
+
+`npm run dev` reads the store and its password from `.env`, so it starts without
+prompting. Development stores cannot turn password protection off, which is why
+`SHOPIFY_STORE_PASSWORD` is needed. Liquid and CSS hot-reload; changes to `src/lookbook/`
+reload once `build:watch` has rewritten the bundle.
+
+```bash
 npm test               # vitest, with coverage thresholds
 npm run lint           # eslint + shopify theme check
 npm run verify:bundle  # fail if committed build output is stale
@@ -67,8 +74,7 @@ npm run verify:bundle  # fail if committed build output is stale
 
 ## How it works
 
-The central decision: **Liquid decides _which_ lookbooks render; React fetches _what is
-in them_.**
+**Liquid decides _which_ lookbooks render; React fetches _what is in them_.**
 
 ```
 ┌─ Liquid (server, per request) ──────────────────────────────────────┐
@@ -76,131 +82,85 @@ in them_.**
 │  home page     -> the one the merchant selected                      │
 │  product page  -> those whose product_handles include product.handle │
 │                   sorted by priority, capped at 2                    │
-│  renders the header: cover image, title, description                 │
-│  emits  <div data-lookbook="{ handles[], market, settings, … }">     │
+│  renders the header; emits <div data-lookbook="{ handles[], … }">    │
 └──────────────────────────┬───────────────────────────────────────────┘
                            │  JSON in a data attribute
 ┌──────────────────────────▼─ React 19 island (browser) ──────────────┐
-│  one Storefront API request per lookbook, handles looked up exactly  │
-│  @inContext(country: AU|JP) -> market price + compare-at overrides   │
+│  one Storefront API request, handles looked up exactly by alias      │
+│  @inContext(country:) -> market price + compare-at overrides         │
 │  formats money with Intl.NumberFormat — never converts               │
 └──────────────────────────────────────────────────────────────────────┘
 ```
 
-The header — cover image, title, description — is server-known, so Liquid renders it into
-the HTML where it paints with the document. React owns only the grid, which is the part
-that genuinely has to wait for data.
-
-Matching a product to its lookbooks is a **content** question the server can answer for
-free from data already in the page render — no API round trip, no layout shift. Doing it
-in React would mean shipping every lookbook's handle list to every browser and paying a
-request to learn something Liquid already knew. Fetching product data is a **catalog**
-question, and the brief assigns it to the Storefront API.
-
-Full reasoning in [ADR-0003](docs/adr/0003-liquid-selects-react-fetches.md).
+Matching is a **content** question the server can answer for free from data already in
+the render. Fetching product data is a **catalog** question the brief assigns to the
+Storefront API. Full reasoning in
+[ADR-0003](docs/adr/0003-liquid-selects-react-fetches.md).
 
 ### The data model
 
-One metaobject type, `lookbook`:
+One metaobject type, `lookbook`: `title`, `description`, `product_handles`
+(**handles only**, in display order), and `priority`.
 
-| Field             | Type                     | Purpose                                   |
-| ----------------- | ------------------------ | ----------------------------------------- |
-| `title`           | single line text         | Display heading                           |
-| `description`     | rich text                | Intro copy                                |
-| `product_handles` | list of single line text | **Handles only.** Order is display order. |
-| `priority`        | integer                  | Lower wins when capping to two            |
+`priority` is the only field the brief does not name. The brief caps product pages at
+two lookbooks but never says _which_ two, and admin ordering is not a contract — so
+selection is explicit: filter by membership, sort by priority, tie-break on handle, take
+two. Implemented in `snippets/lookbook-match.liquid` and tested by running **that file**
+through `liquidjs`, not a reimplementation of it.
 
-Handles rather than product references is a requirement of the brief, and it carries a
-real cost — renaming a product handle silently drops it from every lookbook referencing
-it. [ADR-0002](docs/adr/0002-handles-not-product-references.md) records the trade.
-
-### The "maximum of two" rule
-
-The brief caps product pages at two lookbooks but never says _which_ two, and "whichever
-two Shopify returns" is not a rule — admin ordering is not a contract. So:
-
-1. keep lookbooks whose `product_handles` contains this product's handle
-2. sort ascending by `priority`
-3. tie-break ascending by metaobject handle
-4. take the first two
-
-Steps 2 and 3 happen in a single string sort. Liquid has no sort-by-key for drops, so
-each match is encoded as `PPPP:handle` — zero-padded priority, then handle — and sorted
-lexicographically. The padding is what makes it numeric: without it `100` sorts before
-`20`.
-
-Implemented in `theme/snippets/lookbook-match.liquid` and tested by running **that actual
-file** through `liquidjs`, not a JavaScript reimplementation of it.
+Handles rather than product references is a requirement of the brief, and it costs
+something: renaming a product silently drops it from every lookbook.
+[ADR-0002](docs/adr/0002-handles-not-product-references.md).
 
 ### Market pricing
 
-`localization.country.iso_code` → `@inContext(country:)`. Shopify resolves the market's
-price-list overrides server-side, so amounts arrive already correct and the client only
-formats them. Nothing in the bundle multiplies a price by anything.
+`localization.country.iso_code` → `@inContext(country:)`. Shopify applies price-list
+overrides server-side, so amounts arrive correct and the client only formats them.
+Nothing in the bundle multiplies a price by anything.
 
-The JPY figures are deliberately not conversions:
+| Product             | Australia     | Japan             | price ratio | compare-at ratio |
+| ------------------- | ------------- | ----------------- | ----------- | ---------------- |
+| Camel Wool Overcoat | A$689 / A$849 | ¥78,000 / ¥92,000 | 113.2       | **108.4**        |
+| Rust Bomber Jacket  | A$349 / A$429 | ¥39,800 / ¥52,000 | 114.0       | **121.2**        |
 
-| Product             | Australia | Japan   | implied rate | compare-at rate |
-| ------------------- | --------- | ------- | ------------ | --------------- |
-| Camel Wool Overcoat | A$689     | ¥78,000 | 113.2        | 108.4           |
-| Rust Bomber Jacket  | A$349     | ¥39,800 | 114.0        | **121.2**       |
-| Monk Strap Shoe     | A$389     | ¥44,000 | 113.1        | 115.4           |
-
-Rates differ per product, and on the same product the compare-at rate differs from the
-price rate. No single conversion could produce those numbers — which is the point. It is
-evidence the storefront reads market data rather than doing arithmetic.
-
-`Intl.NumberFormat` takes decimal places from locale data, so AUD gets two and JPY gets
-none: `¥19,800`, not `¥19,800.00`.
+The ratios differ per product, and differ again between price and compare-at on the same
+product. No single conversion produces those numbers — which is the point.
 
 ---
 
 ## Project structure
 
 ```
-src/lookbook/            React island — the only code that gets bundled
-  index.jsx                mount: finds [data-lookbook] nodes, hydrates each
-  Lookbook.jsx             the product grid, and its loading / empty / error states
-  ProductCard.jsx          image, vendor, title, price, compare-at
-  useLookbookProducts.js   fetch lifecycle, abort on unmount
-  styles.css               Tailwind entry: layers, @theme tokens, @source globs
-  api/query.js             query construction + handle validation
-  api/storefront.js        GraphQL client, batching, one retry
-  lib/money.js             Intl.NumberFormat wrapper; never converts
-  lib/sort.js              merchandiser ordering, missing-handle reporting
+src/lookbook/        React island — the only code that gets bundled
+  index.jsx            mount: finds [data-lookbook] nodes, hydrates each
+  Lookbook.jsx         the product grid and its loading / empty / error states
+  ProductCard.jsx      image, vendor, title, price, compare-at
+  api/                 query construction, handle validation, GraphQL client
+  lib/                 money formatting (never converts), merchandiser ordering
 
 theme/
   sections/lookbook.liquid          home page — has the metaobject picker
   sections/lookbook-product.liquid  product page — no picker
-  snippets/lookbook-mount.liquid    shared settings + mount markup
+  snippets/lookbook-mount.liquid    shared header, settings and mount markup
   snippets/lookbook-match.liquid    the max-two rule
   assets/lookbook.{js,css}          BUILD OUTPUT — committed, never hand-edited
 
-scripts/setup/           idempotent Admin API setup
-tests/unit/              money, sort, query, client, components
-tests/liquid/            the max-two rule, run through liquidjs
-docs/adr/                architecture decision records
+scripts/setup/       idempotent Admin API setup
+tests/               unit · liquid (real .liquid files) · e2e (live storefront)
+docs/adr/            architecture decision records
 ```
 
 ---
 
 ## Testing
 
-97 tests. Coverage thresholds are enforced in CI at 80% of `src/`.
+105 unit and Liquid tests, plus 7 end-to-end. Coverage thresholds enforced in CI.
 
-| Level     | What it covers                                                                                                                                                                |
-| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Unit      | JPY zero-decimal formatting; compare-at only when strictly higher; handle validation rejecting GraphQL injection; batching; retry-once; GraphQL errors arriving with HTTP 200 |
-| Component | loading / empty / error states; merchant diagnostics in the theme editor; static Tailwind column classes                                                                      |
-| Liquid    | the max-two rule against the real `.liquid` file — priority order, numeric-vs-lexicographic padding, handle tie-breaks, 0/1/3 membership                                      |
-
-The two things most likely to be probed in review — the max-two rule and market pricing —
-are tested directly rather than incidentally.
-
-**End-to-end.** Three flows are covered against a real storefront, because nothing else
-proves the whole chain: Liquid selecting lookbooks, the island hydrating, the Storefront
-API answering, and market pricing resolving. That chain is where this project's two worst
-bugs lived.
+| Level  | Covers                                                                                                                                                                        |
+| ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Unit   | JPY zero-decimal formatting; compare-at only when strictly higher; handle validation rejecting GraphQL injection; batching; retry-once; GraphQL errors arriving with HTTP 200 |
+| Liquid | the max-two rule and the mount snippet, run against the real `.liquid` files                                                                                                  |
+| E2E    | product data arriving over the network rather than in the HTML; a product in three lookbooks rendering exactly two; switching to Japan showing yen at a non-converted value   |
 
 ```bash
 SHOPIFY_STORE_URL=https://your-store.myshopify.com \
@@ -208,108 +168,48 @@ SHOPIFY_STORE_PASSWORD=your-storefront-password \
 npm run test:e2e
 ```
 
-They assert that product data arrives over the network rather than in the HTML, that a
-product in three lookbooks renders exactly two, and that switching market to Japan shows
-yen with no decimal places at a value that is not a conversion.
-
-Without those variables they skip rather than fail, so a fork with no secrets still gets
-a green run. CI runs them as a separate job from lint and unit tests: a live storefront
-can fail for reasons that have nothing to do with the commit, and that should not block
-unrelated work.
+E2E skips without those variables, so a fork with no secrets still gets a green run. CI
+runs them as a separate job — a live storefront fails for reasons unrelated to the
+commit, and that should not block the unit pipeline.
 
 ---
 
 ## Performance
 
-Measured with Lighthouse against the live storefront, mobile preset, home page.
+Lighthouse, mobile, home page: **Performance 67 · Accessibility 98 · Best Practices 79 ·
+SEO 100**. FCP 1.9 s, Speed Index 2.7 s, CLS 0.098, **LCP 9.6 s**.
 
-|                              |           |
-| ---------------------------- | --------- |
-| Performance                  | 67        |
-| Accessibility                | 98        |
-| Best Practices               | 79        |
-| SEO                          | 100       |
-| First Contentful Paint       | 1.9 s     |
-| Speed Index                  | 2.7 s     |
-| Total Blocking Time          | 220 ms    |
-| Cumulative Layout Shift      | 0.098     |
-| **Largest Contentful Paint** | **9.6 s** |
+LCP is poor and the cause is structural: 7.4 s of it is _resource load delay_, the gap
+before the LCP image can begin downloading. The browser cannot know the URL until the
+island has booted and the Storefront API has answered — which is the brief's
+handles-only, fetch-at-runtime requirement made visible. A Liquid-rendered grid would
+have its image URLs in the initial HTML and a far better LCP, and would not satisfy the
+brief.
 
-LCP is poor and it is worth being precise about why, because the cause is
-structural rather than an oversight. Lighthouse breaks it down as:
+Mitigated by server-rendering the header, loading the first row `eager` at high priority
+(Speed Index 4.3 s → 2.7 s), setting intrinsic dimensions on every image, and
+preconnecting to the image CDN. The remaining lever — firing the Storefront request from
+a small inline script before the bundle loads — is deliberately not taken: it adds a
+second code path through the part of this project where correctness matters most.
 
-| Phase                   | Time         |
-| ----------------------- | ------------ |
-| Time to first byte      | 633 ms       |
-| **Resource load delay** | **7,412 ms** |
-| Resource load time      | 690 ms       |
-| Render delay            | 881 ms       |
-
-The LCP element is a product image, and 77% of the time is _load delay_ — the gap
-before that image can even begin downloading. Nothing can shorten it by
-optimising the image, because the browser does not know the URL yet. The
-sequence is: parse the document, download and execute the island, POST to the
-Storefront API, receive product data, render the cards, and only then start
-fetching images.
-
-That sequence is the brief's requirement made visible. Lookbooks store handles
-only and product data is fetched at runtime, so product imagery is necessarily
-behind an API round trip. A theme that rendered the same grid from Liquid would
-have its image URLs in the initial HTML and a far better LCP — and would not
-satisfy the brief.
-
-What has been done about it:
-
-- The header — cover, title, description — is server-rendered, so something
-  meaningful paints at 1.9 s rather than waiting on hydration.
-- Above-the-fold cards load `eager` at `fetchpriority="high"`; the rest stay
-  lazy. Once the URLs arrive the first row is not queued behind anything. This
-  moved Speed Index from 4.3 s to 2.7 s.
-- Every image carries intrinsic `width` and `height`, so the grid reserves its
-  space and layout does not shift as images arrive. CLS is 0.098, under the
-  0.1 threshold, and what remains comes from Shopify's own injected scripts.
-- `preconnect` to the image CDN, so the connection is warm before the first
-  image URL exists.
-
-The remaining lever, not taken here, is to start the Storefront request before
-the React bundle has finished loading — a small inline script that fires the
-fetch from the mount node's data attribute and hands the promise to the island.
-That removes bundle download and parse from the critical path and should take a
-large bite out of the 7.4 s load delay. It is the right next optimisation and is
-left deliberately, because it adds a second code path to the one part of this
-project where correctness matters most.
-
-Best Practices sits at 79 because of third-party cookies and console output from
-Shopify's own scripts, not the theme.
+---
 
 ## Notes for a reviewer
 
-**Where to look first.** `theme/snippets/lookbook-match.liquid` is the heart of the
-feature; `tests/liquid/lookbook-match.test.js` proves it.
+**Start at** `theme/snippets/lookbook-match.liquid`; `tests/liquid/` proves it.
 
-**Build output is committed.** Shopify serves `theme/assets/` from what `theme push`
-uploads, so the built files must exist in the repo. `npm run verify:bundle` rebuilds from
-scratch in CI and fails if anything drifted — otherwise the storefront can quietly run
-code the diff does not describe.
+**Build output is committed** because Shopify serves `theme/assets/` from what
+`theme push` uploads. `npm run verify:bundle` rebuilds in CI and fails on drift.
 
-**Failure behaviour is deliberate.** A lookbook that cannot render removes itself on the
-storefront rather than leaving a heading above blank space. In the theme editor the same
-conditions are spelled out, including which handles no longer match a published product.
+**Failures are deliberate.** A lookbook that cannot render removes itself on the
+storefront rather than leaving a heading above blank space; the theme editor spells out
+why, including which handles no longer match a product.
 
-**No cart or checkout.** The product page shows image, title, price, description, and
-its lookbooks — and no add-to-cart button. This is a development store: it cannot take
-real payments, and cart and checkout are outside the brief.
+**No cart or checkout.** The store's only location is point-of-sale only and Shopify
+locks online fulfilment off for the default location, so every product reports as
+unavailable. Cart is outside the brief, and a permanently disabled "Sold out" button
+would state something false about the catalog.
 
-It is also not purchasable even in principle. The store's single location is
-point-of-sale only, and Shopify locks online fulfilment off for whichever location is
-the default, so the storefront reports every product as unavailable no matter what
-inventory says — the Admin API reports the same variants as available, because that is
-variant-level and ignores fulfilment routing. Rendering a permanently disabled "Sold
-out" button on every product would state something false about the catalog. Rendering
-no button states nothing, which is accurate.
-
-None of this touches the lookbook feature. Prices, market overrides, the max-two rule,
-and runtime fetching all work and are verified against the live storefront.
 ---
 
 ## Decisions
