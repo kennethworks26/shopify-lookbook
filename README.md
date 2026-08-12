@@ -194,6 +194,28 @@ second code path through the part of this project where correctness matters most
 
 ---
 
+## Against the brief
+
+Each requirement and the file that settles it, rather than a claim you have to take on
+trust.
+
+| Requirement                                       | Where to verify                                                                                        |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Lookbook metaobject: title, description, products | `scripts/setup/metaobjects.mjs` — every field carries a merchandiser-facing description                |
+| Handles, not product references                   | `product_handles` is `list.single_line_text_field`                                                     |
+| Products fetched at runtime, Storefront API       | `tests/e2e/` asserts product titles are **absent** from the server HTML and arrive over the network    |
+| Rendered with React                               | `src/lookbook/`, built to `theme/assets/lookbook.js`                                                   |
+| Native Shopify only                               | Two runtime dependencies, `react` and `react-dom`. No app beyond the one issuing the Storefront token. |
+| Home section targets a chosen lookbook            | `sections/lookbook.liquid` — the `metaobject` picker                                                   |
+| Product section has no picker                     | `sections/lookbook-product.liquid` — `enabled_on: templates: [product]`, and no lookbook setting       |
+| Otherwise identical settings                      | Both render through `snippets/lookbook-mount.liquid`; the schemas differ by the picker alone           |
+| Maximum of two per product page                   | `snippets/lookbook-match.liquid`, asserted by both `tests/liquid/` and `tests/e2e/`                    |
+| Two markets, each in its own currency             | `scripts/setup/markets.mjs`, and the market selector in the theme header                               |
+| Market price **and compare-at** overrides         | The ratio table above — and `lib/money.js`, which has no multiplication in it                          |
+| Configurable in the theme customizer              | The section schemas, plus `docs/client-training/managing-lookbooks.md`                                 |
+
+---
+
 ## Notes for a reviewer
 
 **Start at** `theme/snippets/lookbook-match.liquid`; `tests/liquid/` proves it.
