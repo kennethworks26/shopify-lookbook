@@ -129,10 +129,24 @@ a {
   border-bottom: 1px solid var(--color-line);
 }
 
+/*
+ * The header wraps rather than overflowing.
+ *
+ * Logo, navigation and the market selector cannot fit one row on a phone: the
+ * select alone is ~146px, and flex items do not shrink below their min-content
+ * width, so without wrapping the row simply extended past the viewport and the
+ * whole page scrolled sideways — 23px at 390px wide, 93px at 320px.
+ *
+ * The row gap is smaller than the column gap because the two only apply in
+ * different situations: the column gap separates items sharing a row on desktop,
+ * the row gap separates the stacked rows on mobile, and 2rem between stacked rows
+ * is far too much. Desktop layout is unchanged.
+ */
 .header__inner {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  flex-wrap: wrap;
+  gap: 0.75rem 2rem;
   padding-block: 1rem;
 }
 
@@ -143,7 +157,10 @@ a {
 
 .header__nav {
   display: flex;
-  gap: 1.25rem;
+  /* Wraps for the same reason as its parent — a longer menu must not be what
+     puts the page back into horizontal scroll. */
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
   margin-inline-end: auto;
 }
 
