@@ -34,7 +34,24 @@ export function ProductCard({
   const onSale = showCompareAt && isOnSale(price, compareAt);
 
   return (
-    <article className="group flex flex-col">
+    /*
+     * `relative` is load-bearing, not cosmetic.
+     *
+     * The card contains absolutely positioned children — the sale badge and the
+     * `sr-only` span in the price. Without a positioned ancestor here, `sr-only`
+     * resolves against the *initial containing block*, because neither the <a>,
+     * the <li>, nor the slider track is positioned. An absolutely positioned
+     * element whose containing block sits outside a scroll container is not
+     * clipped by that container, so in the slider those 1px spans sat at the
+     * static position of cards scrolled off-screen and dragged the whole
+     * document's scroll width out with them — the page scrolled sideways by
+     * over a thousand pixels, and `overflow-x: hidden` on the track could not
+     * fix it because the clip never applied to them.
+     *
+     * Making the card its own containing block keeps every absolutely
+     * positioned descendant inside the card, where the track can clip it.
+     */
+    <article className="group relative flex flex-col">
       <a
         // `rootUrl` comes from Liquid's `routes.root_url`. On a multi-market store
         // Shopify serves localized paths like /en-jp/products/..., so hardcoding

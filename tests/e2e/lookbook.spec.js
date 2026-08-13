@@ -73,6 +73,55 @@ test.describe('the maximum-of-two rule', () => {
   });
 });
 
+test.describe('horizontal overflow', () => {
+  /*
+   * Measured on documentElement, deliberately, not on body.
+   *
+   * A previous version of this check read `body.scrollWidth` and passed while the
+   * page was in fact scrolling sideways by more than a thousand pixels: the
+   * culprit was an absolutely positioned `sr-only` span inside the slider whose
+   * containing block was the initial containing block rather than the card, so it
+   * escaped the track's clipping and extended the *document* without ever
+   * widening body. documentElement is what actually scrolls.
+   */
+  const widths = [
+    { name: 'small phone', width: 320 },
+    { name: 'phone', width: 390 },
+    { name: 'tablet', width: 768 },
+  ];
+
+  for (const { name, width } of widths) {
+    test(`does not scroll sideways on a product page at ${width}px (${name})`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 800 });
+      await page.goto(`/products/${ANCHOR_PRODUCT}`);
+      await expect(page.locator('.lookbook-mount article').first()).toBeVisible();
+
+      const overflow = await page.evaluate(() => {
+        const de = document.documentElement;
+        return de.scrollWidth - de.clientWidth;
+      });
+
+      expect(overflow).toBeLessThanOrEqual(0);
+    });
+  }
+
+  test('the slider still scrolls, so the fix did not simply clip it away', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 800 });
+    await page.goto(`/products/${ANCHOR_PRODUCT}`);
+
+    const track = page.locator('.lookbook-track').first();
+    await expect(track).toBeVisible();
+
+    const moved = await track.evaluate((el) => {
+      const before = el.scrollLeft;
+      el.scrollBy({ left: 200, behavior: 'instant' });
+      return el.scrollLeft > before;
+    });
+
+    expect(moved).toBe(true);
+  });
+});
+
 test.describe('market pricing', () => {
   test('shows AUD in Australia and JPY in Japan, at price-list values', async ({ page }) => {
     await page.goto('/');
